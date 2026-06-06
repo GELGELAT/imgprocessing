@@ -38,6 +38,7 @@ def processing(event, combo, label, image_frame, image_label):
     current_method = get_method_name(event, combo)
     if label.image and current_method:
         from proj_gui_settings_descriptions import current_sub_method
+        print(current_sub_method)
         global is_started
         is_started = True
         use_method(event, current_method, label,current_sub_method)

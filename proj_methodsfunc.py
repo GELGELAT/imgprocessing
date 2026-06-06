@@ -9,13 +9,13 @@ from proj_image_nodes import *
 
 #ф обесцвечивания
 def decoloration_method(label,current_sub_method):
-    if current_sub_method == 'decoloration_standard':
+    if current_sub_method.tag == 'decoloration_standard':
         decoloration_method_sub_method_standard(label,current_sub_method)
-    elif current_sub_method == 'decoloration_weighted':
+    elif current_sub_method.tag == 'decoloration_weighted':
         decoloration_method_sub_method_weighted(label,current_sub_method)
 
 def decoloration_method_sub_method_standard(label,current_sub_method):
-    settings = current_sub_method.settings
+    settings = current_sub_method.object.settings
     top_limit = settings[0]
     bottom_limit = settings[1]
 
@@ -40,7 +40,7 @@ def decoloration_method_sub_method_standard(label,current_sub_method):
     label.current +=1
 
 def decoloration_method_sub_method_weighted(label,current_sub_method):
-    settings = current_sub_method.settings
+    settings = current_sub_method.object.settings
     R_coefficient = settings[0]
     G_coefficient = settings[1]
     B_coefficient = settings[2]
@@ -61,13 +61,13 @@ def decoloration_method_sub_method_weighted(label,current_sub_method):
     label.current += 1
 
 def color_mapping_method(label,current_sub_method):
-    if current_sub_method == 'color_mapping_standard':
-        color_mapping_sub_method_standard(label,current_sub_method)
-def color_mapping_sub_method_standard(label,current_sub_method):
-    first_color = current_sub_method.settings[0][0]
-    second_color = current_sub_method.settings[0][1]
-    limit = current_sub_method.settings[1]
-
+    if current_sub_method.tag == 'color_mapping_two_colors':
+        color_mapping_sub_method_two_colors(label,current_sub_method)
+def color_mapping_sub_method_two_colors(label,current_sub_method):
+    settings = current_sub_method.object.settings
+    first_color = settings[0]
+    second_color = settings[1]
+    limit = settings[2]
     image = get_image(label.head, label.current)
     pil_image = image.pil_image
     if pil_image.mode != 'RGBA':
