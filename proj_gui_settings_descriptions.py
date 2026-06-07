@@ -3,7 +3,7 @@ from tkinter import scrolledtext
 from proj_methodsfunc import get_method_name
 from proj_custommethods import *
 
-current_sub_method = None
+current_sub_method = create_current_sub_method(None,None)
 
 
 
@@ -64,17 +64,16 @@ created_methods = {}
 #когда создаём новый метод, добавляем новый флажок и создаём новый метод с именем сабметод+индекстег
 #когда вызываем метод передаём в функцию наш обект
 
+base_decoloration = {}
+base_color_mapping = {}
 
-decoloration_standard_0 = create_custom_method('Standard', 0, 'decoloration_standard',
-                                               [None, None])
-decoloration_weighted_0 = create_custom_method('Weighted', 0, 'decoloration_weighted',
-                                               [0.299, 0.587, 0.114])
+create_and_store_methods(base_decoloration, 'Standard', 0, 'decoloration_standard', [255, 0])
+create_and_store_methods(base_decoloration, 'Standard1', 1, 'decoloration_standard', [128, 128])
+create_and_store_methods(base_decoloration, 'Weighted', 0, 'decoloration_weighted', [0.299, 0.587, 0.114])
 
-color_mapping_standard_0 = create_custom_method('Two colors', 0, 'color_mapping_standard',
-                                                [(132, 71, 21),(59, 20, 6), 150])
+create_and_store_methods(base_color_mapping, 'Two colors', 0, 'color_mapping_two_colors', [(132, 71, 21),(59, 20, 6), 150])
 
-base_decoloration = {'decoloration_standard':{0:decoloration_standard_0},'decoloration_weighted':{0:decoloration_weighted_0}}
-base_color_mapping = {'color_mapping_standard':{0:color_mapping_standard_0}}
+
 
 # method_name rb_key
 def create_settings(event, combo, frame):  # когда жмякаем на кобобокс создаётся нкжное окно с флажками
@@ -85,7 +84,8 @@ def create_settings(event, combo, frame):  # когда жмякаем на ко
             frame.current_sub_method = frame.decoloration_current_sub_method.get()
             get_current_sub_method(current_method, frame)
         else:
-            frame.decoloration_current_sub_method = StringVar(value='decoloration_standard')
+            quantity_sub_methods = get_quantity_sub_methods(base_decoloration)
+            frame.decoloration_current_sub_method = StringVar(value='decoloration_standard_0')
             decoloration_sub_frame = Frame(frame, bg="black")
             decoloration_sub_frame.grid(row=0, column=0, sticky="nsew")
 
@@ -117,99 +117,100 @@ def create_settings(event, combo, frame):  # когда жмякаем на ко
                                                          lst=decoloration_sub_frame.settings_frame: sub_choosing_button_on(
                                                       lst))
 
-            for i in range(3):
+            for i in range(quantity_sub_methods):
                 decoloration_sub_frame.grid_rowconfigure(i, weight=1)
             decoloration_sub_frame.grid_columnconfigure(0, weight=1)
 
             frame.decoloration_sub_frame = decoloration_sub_frame
             frame.current_sub_method = 'decoloration_standard'
             created_methods.update({'Decoloration': frame.decoloration_sub_frame})
-            decoloration_sub_methods = {'Standard': 'decoloration_standard', 'Weighted': 'decoloration_weighted',
-                                        'Custom': 'decoloration_custom'}
 
             index = 0
-            for sub_method in decoloration_sub_methods:
-                current = Radiobutton(
-                    decoloration_sub_choosing_frame,
-                    text=sub_method,
-                    variable=frame.decoloration_current_sub_method,
-                    value=decoloration_sub_methods[sub_method],
-                    bg="black",
-                    fg="white",
-                    selectcolor="gray",
-                    activebackground="black",
-                    anchor='w',  # слева
-                    command=lambda current_method=current_method, frm=frame: get_current_sub_method(current_method, frm)
-                )
-                current.grid(row=index, column=0, sticky="ew")
-                index += 1
+            for values in base_decoloration.values():
+                for current_custom in values.values():
+                    current = Radiobutton(
+                        decoloration_sub_choosing_frame,
+                        text=current_custom.name,
+                        variable=frame.decoloration_current_sub_method,
+                        value=get_united_sub_method_name(current_custom.index,current_custom.tag),
+                        bg="black",
+                        fg="white",
+                        selectcolor="gray",
+                        activebackground="black",
+                        anchor='w',  # слева
+                        command=lambda current_method=current_method, frm=frame: get_current_sub_method(current_method, frm)
+                    )
+                    current.grid(row=index, column=0, sticky="ew")
+                    index += 1
 
             get_current_sub_method(current_method, frame)
     elif current_method == "Color Mapping":  # color_mapping
-        if hasattr(frame, 'color_mapping_sub_frame'):
-            frame.current_sub_method = frame.color_mapping_current_sub_method.get()
-            get_current_sub_method(current_method, frame)
-        else:
-            frame.color_mapping_current_sub_method = StringVar(value='color_mapping_standard_0')  # флажок
-            color_mapping_sub_frame = Frame(frame, bg="black")
-            color_mapping_sub_frame.grid(row=0, column=0, sticky="nsew")
+        if current_method == "Color Mapping":
+            if hasattr(frame, 'color_mapping_sub_frame'):
+                frame.current_sub_method = frame.color_mapping_current_sub_method.get()
+                get_current_sub_method(current_method, frame)
+            else:
+                quantity_sub_methods = get_quantity_sub_methods(base_color_mapping)
+                frame.color_mapping_current_sub_method = StringVar(value='color_mapping_two_colors_0')
+                color_mapping_sub_frame = Frame(frame, bg="black")
+                color_mapping_sub_frame.grid(row=0, column=0, sticky="nsew")
 
-            color_mapping_sub_choosing_button = Button(color_mapping_sub_frame,
-                                                       textvariable=frame.color_mapping_current_sub_method)
-            color_mapping_sub_choosing_button.grid(row=0, column=0, sticky="nsew")
+                color_mapping_sub_choosing_button = Button(color_mapping_sub_frame,
+                                                          textvariable=frame.color_mapping_current_sub_method)
+                color_mapping_sub_choosing_button.grid(row=0, column=0, sticky="nsew")
 
-            color_mapping_sub_choosing_frame = Frame(color_mapping_sub_frame, bg="black")
-            color_mapping_sub_choosing_frame.grid(row=1, column=0, sticky="nsew")
-            color_mapping_sub_choosing_frame.grid_rowconfigure(0, weight=1)
-            color_mapping_sub_choosing_frame.grid_columnconfigure(0, weight=1)
-            color_mapping_sub_settings_button = Button(color_mapping_sub_frame)
+                color_mapping_sub_choosing_frame = Frame(color_mapping_sub_frame, bg="black")
+                color_mapping_sub_choosing_frame.grid(row=1, column=0, sticky="nsew")
+                color_mapping_sub_choosing_frame.grid_rowconfigure(0, weight=1)
+                color_mapping_sub_choosing_frame.grid_columnconfigure(0, weight=1)
+                color_mapping_sub_settings_button = Button(color_mapping_sub_frame)
 
-            color_mapping_sub_settings_button.grid(row=2, column=0, sticky="nsew")
+                color_mapping_sub_settings_button.grid(row=2, column=0, sticky="nsew")
 
-            color_mapping_sub_settings_frame = Frame(color_mapping_sub_frame, bg="red", height=1000)
+                color_mapping_sub_settings_frame = Frame(color_mapping_sub_frame, bg="red", height=1000)
 
-            color_mapping_sub_settings_frame.grid(row=3, column=0, sticky="nsew")
-            color_mapping_sub_settings_frame.grid_remove()
+                color_mapping_sub_settings_frame.grid(row=3, column=0, sticky="nsew")
+                color_mapping_sub_settings_frame.grid_remove()
 
-            color_mapping_sub_frame.choosing_frame = [color_mapping_sub_choosing_frame, 1]
-            color_mapping_sub_frame.settings_frame = [color_mapping_sub_settings_frame, 0]
-            color_mapping_sub_choosing_button.bind("<Button-1>",
-                                                   lambda e,
-                                                          lst=color_mapping_sub_frame.choosing_frame: sub_choosing_button_on(
-                                                       lst))
-            color_mapping_sub_settings_button.bind("<Button-1>",
-                                                   lambda e,
-                                                          lst=color_mapping_sub_frame.settings_frame: sub_choosing_button_on(
-                                                       lst))
-            for i in range(3):
-                color_mapping_sub_frame.grid_rowconfigure(i, weight=1)
-            color_mapping_sub_frame.grid_columnconfigure(0, weight=1)
+                color_mapping_sub_frame.choosing_frame = [color_mapping_sub_choosing_frame, 1]
+                color_mapping_sub_frame.settings_frame = [color_mapping_sub_settings_frame, 0]
+                color_mapping_sub_choosing_button.bind("<Button-1>",
+                                                      lambda e,
+                                                             lst=color_mapping_sub_frame.choosing_frame: sub_choosing_button_on(
+                                                          lst))
+                color_mapping_sub_settings_button.bind("<Button-1>",
+                                                      lambda e,
+                                                             lst=color_mapping_sub_frame.settings_frame: sub_choosing_button_on(
+                                                          lst))
 
-            frame.color_mapping_sub_frame = color_mapping_sub_frame
-            created_methods.update({'Color Mapping': frame.color_mapping_sub_frame})
-            color_mapping_sub_methods = {'Two colors': 'color_mapping_standard_0',
-                                         'Weiwqeghted': 'color_mapping_weighted', 'Custom': 'color_mapping_custom'}
-            color_mapping_sub_methods_settings = {'Two colors': 'color_mapping_standard',
-                                                  'Weiwqeghted': 'color_mapping_weighted',
-                                                  'Custom': 'color_mapping_custom'}
-            index = 0
-            for sub_method in color_mapping_sub_methods:
-                current = Radiobutton(
-                    color_mapping_sub_choosing_frame,
-                    text=sub_method,
-                    variable=frame.color_mapping_current_sub_method,
-                    value=color_mapping_sub_methods[sub_method],
-                    bg="black",
-                    fg="white",
-                    selectcolor="gray",
-                    activebackground="black",
-                    anchor='w',  # слева
-                    command=lambda current_method=current_method, frm=frame: get_current_sub_method(current_method, frm)
-                )
-                current.grid(row=index, column=0, sticky="ew")
-                index += 1
+                for i in range(quantity_sub_methods):
+                    color_mapping_sub_frame.grid_rowconfigure(i, weight=1)
+                color_mapping_sub_frame.grid_columnconfigure(0, weight=1)
 
-            get_current_sub_method(current_method, frame)
+                frame.color_mapping_sub_frame = color_mapping_sub_frame
+                frame.current_sub_method = 'color_mapping_two_colors'
+                created_methods.update({'Color Mapping': frame.color_mapping_sub_frame})
+
+                index = 0
+                for values in base_color_mapping.values():
+                    for current_custom in values.values():
+                        current = Radiobutton(
+                            color_mapping_sub_choosing_frame,
+                            text=current_custom.name,
+                            variable=frame.color_mapping_current_sub_method,
+                            value=get_united_sub_method_name(current_custom.index, current_custom.tag),
+                            bg="black",
+                            fg="white",
+                            selectcolor="gray",
+                            activebackground="black",
+                            anchor='w',  # слева
+                            command=lambda current_method=current_method, frm=frame: get_current_sub_method(
+                                current_method, frm)
+                        )
+                        current.grid(row=index, column=0, sticky="ew")
+                        index += 1
+
+                get_current_sub_method(current_method, frame)
 
 
 def create_description_frame(frame):  # ф создаёт фрейм с описанием в котором лежит скролтекст
@@ -252,13 +253,15 @@ def on_mousewheel(event, canvas):
         return
     canvas.yview("scroll", int(-1 * (event.delta / 120)), "units")  # event.delta величина прокрутки колесика мыши
 
-
 def get_current_sub_method(current_method, frame):  # полуаем текущий саб метод
     global current_sub_method
     if current_method == 'Decoloration':
-        current_sub_method = frame.decoloration_current_sub_method.get()
+        current_sub_method.tag = get_split_sub_method_name(frame.decoloration_current_sub_method.get())[0]
+        current_sub_method.object = find_current_sub_method(base_decoloration,frame.decoloration_current_sub_method.get())
     elif current_method == "Color Mapping":
-        current_sub_method = frame.color_mapping_current_sub_method.get()
+        current_sub_method.tag = get_split_sub_method_name(frame.color_mapping_current_sub_method.get())[0]
+        current_sub_method.object = find_current_sub_method(base_color_mapping,
+                                                            frame.color_mapping_current_sub_method.get())
 
 
 def show_current_settings(event, combo, canvas):  # для отображения нжного окна настроек
