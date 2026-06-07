@@ -64,17 +64,16 @@ created_methods = {}
 #когда создаём новый метод, добавляем новый флажок и создаём новый метод с именем сабметод+индекстег
 #когда вызываем метод передаём в функцию наш обект
 
+base_decoloration = {}
+base_color_mapping = {}
 
-decoloration_standard_0 = create_custom_method('Standard', 0, 'decoloration_standard',
-                                               [255, 0])
-decoloration_weighted_0 = create_custom_method('Weighted', 0, 'decoloration_weighted',
-                                               [0.299, 0.587, 0.114])
+create_and_store_methods(base_decoloration, 'Standard', 0, 'decoloration_standard', [255, 0])
+create_and_store_methods(base_decoloration, 'Standard1', 1, 'decoloration_standard', [128, 128])
+create_and_store_methods(base_decoloration, 'Weighted', 0, 'decoloration_weighted', [0.299, 0.587, 0.114])
 
-color_mapping_two_colors_0 = create_custom_method('Two colors', 0, 'color_mapping_two_colors',
-                                                [(132, 71, 21),(59, 20, 6), 150])
+create_and_store_methods(base_color_mapping, 'Two colors', 0, 'color_mapping_two_colors', [(132, 71, 21),(59, 20, 6), 150])
 
-base_decoloration = {'decoloration_standard':{0:decoloration_standard_0},'decoloration_weighted':{0:decoloration_weighted_0}}
-base_color_mapping = {'color_mapping_two_colors':{0:color_mapping_two_colors_0}}
+
 
 # method_name rb_key
 def create_settings(event, combo, frame):  # когда жмякаем на кобобокс создаётся нкжное окно с флажками
