@@ -73,18 +73,43 @@ create_and_store_methods(base_decoloration, 'Weighted', 0, 'decoloration_weighte
 
 create_and_store_methods(base_color_mapping, 'Two colors', 0, 'color_mapping_two_colors', [(132, 71, 21),(59, 20, 6), 150])
 
-def create_sub_method_settings_frame():
-    if current_sub_method.tag == 'decoloration_standard':
-        pass
+created_sub_methods_settings = {}
 
+def show_current_sub_method_settings_frame():
+    for page, method in created_sub_methods_settings.items():
+        method.grid_remove()
+    created_sub_methods_settings.get(current_sub_method.tag).grid()
+
+def create_sub_method_settings_frame(frame):
+    if current_sub_method.tag == 'decoloration_standard':
+        decoloration_standard_setting_frame = Frame(decoloration_sub_settings_frame,bg='black',height=100)
+        decoloration_standard_setting_frame.grid(row=0, column=0, sticky="nsew")
+        frame.decoloration_sub_frame.decoloration_standard_setting_frame = decoloration_standard_setting_frame
+        created_sub_methods_settings.update({'decoloration_standard': frame.decoloration_sub_frame.decoloration_standard_setting_frame})
+        Label(decoloration_standard_setting_frame, text="Настройки", bg='blue', fg='white').pack()
+        show_current_sub_method_settings_frame()
     elif current_sub_method.tag == 'decoloration_weighted':
-        pass
+        decoloration_weighted_setting_frame = Frame(decoloration_sub_settings_frame, bg='black', height=100)
+        decoloration_weighted_setting_frame.grid(row=0, column=0, sticky="nsew")
+        frame.decoloration_sub_frame.decoloration_weighted_setting_frame = decoloration_weighted_setting_frame
+        created_sub_methods_settings.update({'decoloration_weighted': frame.decoloration_sub_frame.decoloration_weighted_setting_frame})
+        Label(decoloration_weighted_setting_frame, text="Наddddddстройки", bg='red', fg='white').pack()
+
+        show_current_sub_method_settings_frame()
+    elif current_sub_method.tag == 'color_mapping_two_colors':
+        color_mapping_two_colors_setting_frame = Frame(color_mapping_sub_settings_frame, bg='black', height=100)
+        color_mapping_two_colors_setting_frame.grid(row=0, column=0, sticky="nsew")
+        frame.decoloration_sub_frame.color_mapping_two_colors_setting_frame = color_mapping_two_colors_setting_frame
+        created_sub_methods_settings.update({'color_mapping_two_colors': frame.decoloration_sub_frame.color_mapping_two_colors_setting_frame})
+        Label(color_mapping_two_colors_setting_frame, text="Наddddddстрddddaaaaaaойки", bg='red', fg='white').pack()
+
+        show_current_sub_method_settings_frame()
 
 
 
 # method_name rb_key
 def create_settings(event, combo, frame):  # когда жмякаем на кобобокс создаётся нкжное окно с флажками
-    global created_methods,decoloration_sub_frame,color_mapping_sub_frame
+    global created_methods,decoloration_sub_settings_frame,color_mapping_sub_settings_frame
     current_method = get_method_name(event, combo)
     if current_method == "Decoloration":
         if hasattr(frame, 'decoloration_sub_frame'):
@@ -108,7 +133,7 @@ def create_settings(event, combo, frame):  # когда жмякаем на ко
 
             decoloration_sub_settings_button.grid(row=2, column=0, sticky="nsew")
 
-            decoloration_sub_settings_frame = Frame(decoloration_sub_frame, bg="red", height=1000)
+            decoloration_sub_settings_frame = Frame(decoloration_sub_frame, bg="black")
 
             decoloration_sub_settings_frame.grid(row=3, column=0, sticky="nsew")
             decoloration_sub_settings_frame.grid_remove()
@@ -269,6 +294,7 @@ def get_current_sub_method(current_method, frame):  # полуаем текущ�
         current_sub_method.tag = get_split_sub_method_name(frame.color_mapping_current_sub_method.get())[0]
         current_sub_method.object = find_current_sub_method(base_color_mapping,
                                                             frame.color_mapping_current_sub_method.get())
+    create_sub_method_settings_frame(frame)
 
 
 def show_current_settings(event, combo, canvas):  # для отображения нжного окна настроек
