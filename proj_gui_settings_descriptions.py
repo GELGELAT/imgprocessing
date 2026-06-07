@@ -73,11 +73,18 @@ create_and_store_methods(base_decoloration, 'Weighted', 0, 'decoloration_weighte
 
 create_and_store_methods(base_color_mapping, 'Two colors', 0, 'color_mapping_two_colors', [(132, 71, 21),(59, 20, 6), 150])
 
+def create_sub_method_settings_frame():
+    if current_sub_method.tag == 'decoloration_standard':
+        pass
+
+    elif current_sub_method.tag == 'decoloration_weighted':
+        pass
+
 
 
 # method_name rb_key
 def create_settings(event, combo, frame):  # когда жмякаем на кобобокс создаётся нкжное окно с флажками
-    global created_methods
+    global created_methods,decoloration_sub_frame,color_mapping_sub_frame
     current_method = get_method_name(event, combo)
     if current_method == "Decoloration":
         if hasattr(frame, 'decoloration_sub_frame'):

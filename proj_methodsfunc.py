@@ -6,7 +6,6 @@ from PIL import ImageTk, Image
 from proj_image_nodes import *
 
 
-
 #ф обесцвечивания
 def decoloration_method(label,current_sub_method):
     if current_sub_method.tag == 'decoloration_standard':
