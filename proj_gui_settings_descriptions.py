@@ -82,15 +82,64 @@ def create_sub_method_buttons(frame):
     reset_button.grid(row=0, column=0, sticky="nsew")
 
     save_button =Button(frame,text='Save')
-    save_button.grid(row=0, column=1, sticky="nsew",)
+    save_button.grid(row=0, column=1, sticky="nsew")
 
     apply_button = Button(frame,text='Apply')
-    apply_button.grid(row=0, column=2, sticky="nsew",)
+    apply_button.grid(row=0, column=2, sticky="nsew")
+
+    apply_button.bind("<Button-1>",lambda e: sub_method_settings_change())
+
+
+def get_var_from_sub_method_settings():
+    result_settings = []
+    for variables in variables_settings:
+        result_settings.append(variables.get())
+    return result_settings
+
+def sub_method_settings_change():
+    result_settings = get_var_from_sub_method_settings()
+    if current_sub_method.tag == 'decoloration_standard':
+        i = 0
+        for result in result_settings:
+            current_sub_method.object.settings[i] = int(result)
+            print(result)
+            i +=1
+
+def validate_input(var, *args):
+    value = var.get()
+    # Оставляем только цифры
+    filtered = ''.join(filter(str.isdigit, value))
+    if value != filtered:
+        var.set(filtered)
+    '''if var.get() == '':
+        var.set('1')
+    if int(var.get()[0]) == 0:
+        var.set('1')'''
+
+
+    if current_sub_method.tag == 'decoloration_standard':
+        if 255< int(var.get()):
+            var.set('255')
+        elif int(var.get()) < 0:
+            var.set('0')
+
+
 
 def create_sub_method_settings(frame):
+    global variables_settings
+    variables_settings = []
     if current_sub_method.tag == 'decoloration_standard':
-        la = Label(frame,text='aaaa')
-        la.grid(row=0, column=0, sticky="nsew")
+        i = 0
+        for label_text, value in {'upper paint limit (max:255):':current_sub_method.object.settings[0],'lower paint border (min:0):':current_sub_method.object.settings[1]}.items():
+            label = Label(frame, text=label_text,bg='black',fg='white')
+            label.grid(row=i, column=0, padx=10, pady=5, sticky="w")
+
+            var_settings = StringVar(value=value)
+            var_settings.trace('w', lambda *args, v=var_settings: validate_input(v))
+            variables_settings.append(var_settings)
+            entry = Entry(frame, textvariable=var_settings)
+            entry.grid(row=i, column=1, padx=10, pady=5)
+            i+=1
 
 def create_sub_method_settings_frame(frame): #decoloration_weighted
     if current_sub_method.tag == 'decoloration_standard':
