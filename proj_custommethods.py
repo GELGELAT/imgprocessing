@@ -51,3 +51,10 @@ def create_and_store_methods(base_dict, name, index, tag, settings):
     if tag not in base_dict:
         base_dict[tag] = {}
     base_dict[tag][index] = obj
+
+
+
+
+
+
+
