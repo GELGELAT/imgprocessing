@@ -3,11 +3,7 @@ from tkinter import scrolledtext
 from proj_methodsfunc import get_method_name
 from proj_custommethods import *
 
-current_sub_method = create_current_sub_method(None,None)
-
-
-
-
+current_sub_method = create_current_sub_method(None, None)
 
 
 # справка насчёт канваса и отрисовки в нём фрейма. когда мы поместили фрейм в 00 в канвасе мы должны указать размеры канвасу этого фрейма поэтому
@@ -58,11 +54,10 @@ def sub_choosing_button_on(frame_list):
 
 created_methods = {}
 
-
-#устройство кастомизации: название, индекс, саб мктод, настройки
-#когда создаём фрейм с выбором флажков проходимся по списку и создаём флажки
-#когда создаём новый метод, добавляем новый флажок и создаём новый метод с именем сабметод+индекстег
-#когда вызываем метод передаём в функцию наш обект
+# устройство кастомизации: название, индекс, саб мктод, настройки
+# когда создаём фрейм с выбором флажков проходимся по списку и создаём флажки
+# когда создаём новый метод, добавляем новый флажок и создаём новый метод с именем сабметод+индекстег
+# когда вызываем метод передаём в функцию наш обект
 
 base_decoloration = {}
 base_color_mapping = {}
@@ -71,45 +66,117 @@ create_and_store_methods(base_decoloration, 'Standard', 0, 'decoloration_standar
 create_and_store_methods(base_decoloration, 'Standard1', 1, 'decoloration_standard', [128, 128])
 create_and_store_methods(base_decoloration, 'Weighted', 0, 'decoloration_weighted', [0.299, 0.587, 0.114])
 
-create_and_store_methods(base_color_mapping, 'Two colors', 0, 'color_mapping_two_colors', [(132, 71, 21),(59, 20, 6), 150])
+create_and_store_methods(base_color_mapping, 'Two colors', 0, 'color_mapping_two_colors',
+                         [(132, 71, 21), (59, 20, 6), 150])
 
 created_sub_methods_settings = {}
+
 
 def show_current_sub_method_settings_frame():
     for page, method in created_sub_methods_settings.items():
         method.grid_remove()
     created_sub_methods_settings.get(current_sub_method.tag).grid()
 
-def create_sub_method_settings_frame(frame):
-    if current_sub_method.tag == 'decoloration_standard':
-        decoloration_standard_setting_frame = Frame(decoloration_sub_settings_frame,bg='black',height=100)
-        decoloration_standard_setting_frame.grid(row=0, column=0, sticky="nsew")
-        frame.decoloration_sub_frame.decoloration_standard_setting_frame = decoloration_standard_setting_frame
-        created_sub_methods_settings.update({'decoloration_standard': frame.decoloration_sub_frame.decoloration_standard_setting_frame})
-        Label(decoloration_standard_setting_frame, text="Настройки", bg='blue', fg='white').pack()
-        show_current_sub_method_settings_frame()
-    elif current_sub_method.tag == 'decoloration_weighted':
-        decoloration_weighted_setting_frame = Frame(decoloration_sub_settings_frame, bg='black', height=100)
-        decoloration_weighted_setting_frame.grid(row=0, column=0, sticky="nsew")
-        frame.decoloration_sub_frame.decoloration_weighted_setting_frame = decoloration_weighted_setting_frame
-        created_sub_methods_settings.update({'decoloration_weighted': frame.decoloration_sub_frame.decoloration_weighted_setting_frame})
-        Label(decoloration_weighted_setting_frame, text="Наddddddстройки", bg='red', fg='white').pack()
+def create_sub_method_buttons(frame):
+    reset_button = Button(frame, text='Reset')
+    reset_button.grid(row=0, column=0, sticky="nsew")
 
-        show_current_sub_method_settings_frame()
+    save_button =Button(frame,text='Save')
+    save_button.grid(row=0, column=1, sticky="nsew",)
+
+    apply_button = Button(frame,text='Apply')
+    apply_button.grid(row=0, column=2, sticky="nsew",)
+
+def create_sub_method_settings(frame):
+    if current_sub_method.tag == 'decoloration_standard':
+        la = Label(frame,text='aaaa')
+        la.grid(row=0, column=0, sticky="nsew")
+
+def create_sub_method_settings_frame(frame): #decoloration_weighted
+    if current_sub_method.tag == 'decoloration_standard':
+        if hasattr(frame.decoloration_sub_frame,'main_decoloration_standard_setting_frame'):
+            frame.decoloration_sub_frame.main_decoloration_standard_setting_frame.sub_decoloration_standard_setting_frame.decoloration_standard_setting_frame.destroy()
+            decoloration_standard_setting_frame = Frame(frame.decoloration_sub_frame.main_decoloration_standard_setting_frame.sub_decoloration_standard_setting_frame, bg="black", height=100)
+            decoloration_standard_setting_frame.grid(row=0, column=0, sticky="nsew")
+            decoloration_standard_setting_frame.grid_columnconfigure(0, weight=1)
+
+            frame.decoloration_sub_frame.main_decoloration_standard_setting_frame.decoloration_standard_setting_frame = decoloration_standard_setting_frame
+            create_sub_method_settings(decoloration_standard_setting_frame)
+
+            show_current_sub_method_settings_frame()
+        else:
+            main_decoloration_standard_setting_frame = Frame(decoloration_sub_settings_frame, bg='black')
+            main_decoloration_standard_setting_frame.grid(row=0, column=0, sticky="nsew")
+            main_decoloration_standard_setting_frame.grid_rowconfigure(1, weight=1)
+            main_decoloration_standard_setting_frame.grid_columnconfigure(0, weight=1)
+            main_decoloration_standard_setting_frame.grid_rowconfigure(0, weight=1)
+
+            frame.decoloration_sub_frame.main_decoloration_standard_setting_frame = main_decoloration_standard_setting_frame
+            created_sub_methods_settings.update(
+                {'decoloration_standard': frame.decoloration_sub_frame.main_decoloration_standard_setting_frame})
+            sub_decoloration_standard_setting_frame = Frame(main_decoloration_standard_setting_frame, bg="black")
+            sub_decoloration_standard_setting_frame.grid(row=0, column=0, sticky="nsew")
+            sub_decoloration_standard_setting_frame.grid_rowconfigure(0, weight=1)
+            sub_decoloration_standard_setting_frame.grid_columnconfigure(0, weight=1)
+            sub_decoloration_standard_setting_frame.grid_rowconfigure(1, weight=1)
+            frame.decoloration_sub_frame.main_decoloration_standard_setting_frame.sub_decoloration_standard_setting_frame = sub_decoloration_standard_setting_frame
+            decoloration_standard_setting_frame =Frame(sub_decoloration_standard_setting_frame, bg="black",height=100)
+            decoloration_standard_setting_frame.grid(row=0, column=0, sticky="nsew")
+            decoloration_standard_setting_frame.grid_columnconfigure(0, weight=1)
+
+            decoloration_standard_setting_button_frame = Frame(sub_decoloration_standard_setting_frame, bg="black",height=100)
+            decoloration_standard_setting_button_frame.grid(row=1, column=0, sticky="nsew")
+            decoloration_standard_setting_button_frame.grid_columnconfigure(0, weight=1)
+            decoloration_standard_setting_button_frame.grid_columnconfigure(1, weight=1)
+            decoloration_standard_setting_button_frame.grid_columnconfigure(2, weight=1)
+            frame.decoloration_sub_frame.main_decoloration_standard_setting_frame.sub_decoloration_standard_setting_frame.decoloration_standard_setting_frame = decoloration_standard_setting_frame
+            create_sub_method_settings(decoloration_standard_setting_frame)
+            create_sub_method_buttons(decoloration_standard_setting_button_frame)
+            show_current_sub_method_settings_frame()
+    elif current_sub_method.tag == 'decoloration_weighted':
+        if hasattr(frame.decoloration_sub_frame, 'main_decoloration_weighted_setting_frame'):
+            show_current_sub_method_settings_frame()
+        else:
+            main_decoloration_weighted_setting_frame = Frame(decoloration_sub_settings_frame, bg='black')
+            main_decoloration_weighted_setting_frame.grid(row=0, column=0, sticky="nsew")
+            main_decoloration_weighted_setting_frame.grid_rowconfigure(1, weight=1)
+            main_decoloration_weighted_setting_frame.grid_columnconfigure(0, weight=1)
+            main_decoloration_weighted_setting_frame.grid_rowconfigure(0, weight=1)
+
+            frame.decoloration_sub_frame.main_decoloration_weighted_setting_frame = main_decoloration_weighted_setting_frame
+            created_sub_methods_settings.update(
+                {'decoloration_weighted': frame.decoloration_sub_frame.main_decoloration_weighted_setting_frame})
+            sub_decoloration_weighted_setting_frame = Frame(main_decoloration_weighted_setting_frame, bg="black")
+            sub_decoloration_weighted_setting_frame.grid(row=0, column=0, sticky="nsew")
+            sub_decoloration_weighted_setting_frame.grid_rowconfigure(0, weight=1)
+            sub_decoloration_weighted_setting_frame.grid_columnconfigure(0, weight=1)
+            sub_decoloration_weighted_setting_frame.grid_rowconfigure(1, weight=1)
+
+            decoloration_weighted_setting_frame = Frame(sub_decoloration_weighted_setting_frame, bg="white", height=100)
+            decoloration_weighted_setting_frame.grid(row=0, column=0, sticky="nsew")
+
+            decoloration_weighted_setting_button_frame = Frame(sub_decoloration_weighted_setting_frame, bg="black",
+                                                               height=100)
+            decoloration_weighted_setting_button_frame.grid(row=1, column=0, sticky="nsew")
+            decoloration_weighted_setting_button_frame.grid_columnconfigure(0, weight=1)
+            decoloration_weighted_setting_button_frame.grid_columnconfigure(1, weight=1)
+            decoloration_weighted_setting_button_frame.grid_columnconfigure(2, weight=1)
+
+            create_sub_method_buttons(decoloration_weighted_setting_button_frame)
+            show_current_sub_method_settings_frame()
     elif current_sub_method.tag == 'color_mapping_two_colors':
         color_mapping_two_colors_setting_frame = Frame(color_mapping_sub_settings_frame, bg='black', height=100)
         color_mapping_two_colors_setting_frame.grid(row=0, column=0, sticky="nsew")
         frame.decoloration_sub_frame.color_mapping_two_colors_setting_frame = color_mapping_two_colors_setting_frame
-        created_sub_methods_settings.update({'color_mapping_two_colors': frame.decoloration_sub_frame.color_mapping_two_colors_setting_frame})
+        created_sub_methods_settings.update(
+            {'color_mapping_two_colors': frame.decoloration_sub_frame.color_mapping_two_colors_setting_frame})
         Label(color_mapping_two_colors_setting_frame, text="Наddddddстрddddaaaaaaойки", bg='red', fg='white').pack()
-
         show_current_sub_method_settings_frame()
-
 
 
 # method_name rb_key
 def create_settings(event, combo, frame):  # когда жмякаем на кобобокс создаётся нкжное окно с флажками
-    global created_methods,decoloration_sub_settings_frame,color_mapping_sub_settings_frame
+    global created_methods, decoloration_sub_settings_frame, color_mapping_sub_settings_frame
     current_method = get_method_name(event, combo)
     if current_method == "Decoloration":
         if hasattr(frame, 'decoloration_sub_frame'):
@@ -129,13 +196,15 @@ def create_settings(event, combo, frame):  # когда жмякаем на ко
             decoloration_sub_choosing_frame.grid(row=1, column=0, sticky="nsew")
             decoloration_sub_choosing_frame.grid_rowconfigure(0, weight=1)
             decoloration_sub_choosing_frame.grid_columnconfigure(0, weight=1)
-            decoloration_sub_settings_button = Button(decoloration_sub_frame)
+            decoloration_sub_settings_button = Button(decoloration_sub_frame,text='Settings')
 
             decoloration_sub_settings_button.grid(row=2, column=0, sticky="nsew")
 
-            decoloration_sub_settings_frame = Frame(decoloration_sub_frame, bg="black")
+            decoloration_sub_settings_frame = Frame(decoloration_sub_frame, bg="dark red")
 
             decoloration_sub_settings_frame.grid(row=3, column=0, sticky="nsew")
+            decoloration_sub_settings_frame.grid_rowconfigure(0, weight=1)
+            decoloration_sub_settings_frame.grid_columnconfigure(0, weight=1)
             decoloration_sub_settings_frame.grid_remove()
 
             decoloration_sub_frame.choosing_frame = [decoloration_sub_choosing_frame, 1]
@@ -164,13 +233,14 @@ def create_settings(event, combo, frame):  # когда жмякаем на ко
                         decoloration_sub_choosing_frame,
                         text=current_custom.name,
                         variable=frame.decoloration_current_sub_method,
-                        value=get_united_sub_method_name(current_custom.index,current_custom.tag),
+                        value=get_united_sub_method_name(current_custom.index, current_custom.tag),
                         bg="black",
                         fg="white",
                         selectcolor="gray",
                         activebackground="black",
                         anchor='w',  # слева
-                        command=lambda current_method=current_method, frm=frame: get_current_sub_method(current_method, frm)
+                        command=lambda current_method=current_method, frm=frame: get_current_sub_method(current_method,
+                                                                                                        frm)
                     )
                     current.grid(row=index, column=0, sticky="ew")
                     index += 1
@@ -188,7 +258,7 @@ def create_settings(event, combo, frame):  # когда жмякаем на ко
                 color_mapping_sub_frame.grid(row=0, column=0, sticky="nsew")
 
                 color_mapping_sub_choosing_button = Button(color_mapping_sub_frame,
-                                                          textvariable=frame.color_mapping_current_sub_method)
+                                                           textvariable=frame.color_mapping_current_sub_method)
                 color_mapping_sub_choosing_button.grid(row=0, column=0, sticky="nsew")
 
                 color_mapping_sub_choosing_frame = Frame(color_mapping_sub_frame, bg="black")
@@ -207,13 +277,13 @@ def create_settings(event, combo, frame):  # когда жмякаем на ко
                 color_mapping_sub_frame.choosing_frame = [color_mapping_sub_choosing_frame, 1]
                 color_mapping_sub_frame.settings_frame = [color_mapping_sub_settings_frame, 0]
                 color_mapping_sub_choosing_button.bind("<Button-1>",
-                                                      lambda e,
-                                                             lst=color_mapping_sub_frame.choosing_frame: sub_choosing_button_on(
-                                                          lst))
+                                                       lambda e,
+                                                              lst=color_mapping_sub_frame.choosing_frame: sub_choosing_button_on(
+                                                           lst))
                 color_mapping_sub_settings_button.bind("<Button-1>",
-                                                      lambda e,
-                                                             lst=color_mapping_sub_frame.settings_frame: sub_choosing_button_on(
-                                                          lst))
+                                                       lambda e,
+                                                              lst=color_mapping_sub_frame.settings_frame: sub_choosing_button_on(
+                                                           lst))
 
                 for i in range(quantity_sub_methods):
                     color_mapping_sub_frame.grid_rowconfigure(i, weight=1)
@@ -285,11 +355,13 @@ def on_mousewheel(event, canvas):
         return
     canvas.yview("scroll", int(-1 * (event.delta / 120)), "units")  # event.delta величина прокрутки колесика мыши
 
+
 def get_current_sub_method(current_method, frame):  # полуаем текущий саб метод
     global current_sub_method
     if current_method == 'Decoloration':
         current_sub_method.tag = get_split_sub_method_name(frame.decoloration_current_sub_method.get())[0]
-        current_sub_method.object = find_current_sub_method(base_decoloration,frame.decoloration_current_sub_method.get())
+        current_sub_method.object = find_current_sub_method(base_decoloration,
+                                                            frame.decoloration_current_sub_method.get())
     elif current_method == "Color Mapping":
         current_sub_method.tag = get_split_sub_method_name(frame.color_mapping_current_sub_method.get())[0]
         current_sub_method.object = find_current_sub_method(base_color_mapping,
