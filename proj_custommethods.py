@@ -53,6 +53,15 @@ def create_and_store_methods(base_dict, name, index, tag, settings):
     base_dict[tag][index] = obj
 
 
+def find_smallest_index(base_dict, tag):
+    if tag not in base_dict:
+        return 0
+
+    indices = base_dict[tag].keys()
+    i = 0
+    while i in indices:
+        i += 1
+    return i
 
 
 
