@@ -156,7 +156,7 @@ def save_sub_method_settings(current_method,frame):
     decoloration_sub_choosing_frame.grid(row=1, column=0, sticky="nsew")
     decoloration_sub_choosing_frame.grid_rowconfigure(0, weight=1)
     decoloration_sub_choosing_frame.grid_columnconfigure(0, weight=1)
-
+ 
 
     index = 0
     for values in base_decoloration.values():
