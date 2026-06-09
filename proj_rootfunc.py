@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter import messagebox, filedialog
 from PIL import ImageTk, Image
 from proj_image_nodes import *
+from proj_gui_settings_descriptions import *
 from proj_methodsfunc import *
 from math import sin, cos, radians
 
@@ -40,6 +41,7 @@ def processing(event, combo, label, image_frame, image_label):
         from proj_gui_settings_descriptions import current_sub_method
         global is_started
         is_started = True
+        sub_method_settings_change()
         use_method(event, current_method, label,current_sub_method)
         preview_image_resize_redo(event, image_frame, image_label)
         is_started = False
