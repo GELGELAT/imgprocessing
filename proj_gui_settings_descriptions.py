@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import scrolledtext
 from proj_methodsfunc import get_method_name
 from proj_custommethods import *
+from proj_configs import *
 
 current_sub_method = create_current_sub_method(None, None)
 
@@ -308,6 +309,7 @@ def create_sub_method_settings_frame(current_method, frame):  # decoloration_wei
 def create_settings(event, combo, frame):  # когда жмякаем на кобобокс создаётся нкжное окно с флажками
     global created_methods, decoloration_sub_settings_frame, color_mapping_sub_settings_frame, decoloration_sub_frame
     current_method = get_method_name(event, combo)
+    print(current_method)
     if current_method == "Decoloration":
         if hasattr(frame, 'decoloration_sub_frame'):
             frame.current_sub_method = frame.decoloration_current_sub_method.get()
