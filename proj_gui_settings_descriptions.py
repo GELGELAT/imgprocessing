@@ -76,7 +76,7 @@ def sub_choosing_button_on(frame_list):
 
 create_and_store_methods(base_decoloration, 'Standard', 0, 'decoloration_standard', [255, 0])
 create_and_store_methods(base_decoloration, 'Standard1', 1, 'decoloration_standard', [128, 128])
-create_and_store_methods(base_decoloration, 'Weighted', 0, 'decoloration_weighted', [0.299, 0.587, 0.114])
+create_and_store_methods(base_decoloration, 'Weighted', 0, 'decoloration_weighted', [0.99, 0.587, 0.114])
 
 create_and_store_methods(base_color_mapping, 'Two colors', 0, 'color_mapping_two_colors',
                          [(132, 71, 21), (59, 20, 6), 150])
@@ -296,20 +296,55 @@ def create_sub_method_settings_frame(current_method, frame):  # decoloration_wei
                 create_sub_method_buttons(current_method, frame, decoloration_weighted_setting_button_frame)
                 show_current_sub_method_settings_frame()
     elif current_sub_method.tag == 'color_mapping_two_colors':
-        color_mapping_two_colors_setting_frame = Frame(color_mapping_sub_settings_frame, bg='black', height=100)
-        color_mapping_two_colors_setting_frame.grid(row=0, column=0, sticky="nsew")
-        frame.decoloration_sub_frame.color_mapping_two_colors_setting_frame = color_mapping_two_colors_setting_frame
-        created_sub_methods_settings.update(
-            {'color_mapping_two_colors': frame.decoloration_sub_frame.color_mapping_two_colors_setting_frame})
-        Label(color_mapping_two_colors_setting_frame, text="Наddddddстрddddaaaaaaойки", bg='red', fg='white').pack()
-        show_current_sub_method_settings_frame()
+        if hasattr(frame.color_mapping_sub_frame, 'main_color_mapping_two_colors_setting_frame'):
+            frame.color_mapping_sub_frame.main_color_mapping_two_colors_setting_frame.sub_color_mapping_two_colors_setting_frame.color_mapping_two_colors_setting_frame.destroy()
+            color_mapping_two_colors_setting_frame = Frame(
+                frame.color_mapping_sub_frame.main_color_mapping_two_colors_setting_frame.sub_color_mapping_two_colors_setting_frame,
+                bg="black", height=100)
+            color_mapping_two_colors_setting_frame.grid(row=0, column=0, sticky="nsew")
+            color_mapping_two_colors_setting_frame.grid_columnconfigure(0, weight=1)
+
+            frame.color_mapping_sub_frame.main_color_mapping_two_colors_setting_frame.color_mapping_two_colors_setting_frame = color_mapping_two_colors_setting_frame
+            create_sub_method_settings(color_mapping_two_colors_setting_frame)
+
+            show_current_sub_method_settings_frame()
+        else:
+            main_color_mapping_two_colors_setting_frame = Frame(color_mapping_sub_settings_frame, bg='black')
+            main_color_mapping_two_colors_setting_frame.grid(row=0, column=0, sticky="nsew")
+            main_color_mapping_two_colors_setting_frame.grid_rowconfigure(1, weight=1)
+            main_color_mapping_two_colors_setting_frame.grid_columnconfigure(0, weight=1)
+            main_color_mapping_two_colors_setting_frame.grid_rowconfigure(0, weight=1)
+
+            frame.color_mapping_sub_frame.main_color_mapping_two_colors_setting_frame = main_color_mapping_two_colors_setting_frame
+            created_sub_methods_settings.update(
+                {'color_mapping_two_colors': frame.color_mapping_sub_frame.main_color_mapping_two_colors_setting_frame})
+            sub_color_mapping_two_colors_setting_frame = Frame(main_color_mapping_two_colors_setting_frame, bg="black")
+            sub_color_mapping_two_colors_setting_frame.grid(row=0, column=0, sticky="nsew")
+            sub_color_mapping_two_colors_setting_frame.grid_rowconfigure(0, weight=1)
+            sub_color_mapping_two_colors_setting_frame.grid_columnconfigure(0, weight=1)
+            sub_color_mapping_two_colors_setting_frame.grid_rowconfigure(1, weight=1)
+            frame.color_mapping_sub_frame.main_color_mapping_two_colors_setting_frame.sub_color_mapping_two_colors_setting_frame = sub_color_mapping_two_colors_setting_frame
+            color_mapping_two_colors_setting_frame = Frame(sub_color_mapping_two_colors_setting_frame, bg="black",
+                                                        height=100)
+            color_mapping_two_colors_setting_frame.grid(row=0, column=0, sticky="nsew")
+            color_mapping_two_colors_setting_frame.grid_columnconfigure(0, weight=1)
+
+            color_mapping_two_colors_setting_button_frame = Frame(sub_color_mapping_two_colors_setting_frame, bg="black",
+                                                               height=100)
+            color_mapping_two_colors_setting_button_frame.grid(row=1, column=0, sticky="nsew")
+            color_mapping_two_colors_setting_button_frame.grid_columnconfigure(0, weight=1)
+            color_mapping_two_colors_setting_button_frame.grid_columnconfigure(1, weight=1)
+            color_mapping_two_colors_setting_button_frame.grid_columnconfigure(2, weight=1)
+            frame.color_mapping_sub_frame.main_color_mapping_two_colors_setting_frame.sub_color_mapping_two_colors_setting_frame.color_mapping_two_colors_setting_frame = color_mapping_two_colors_setting_frame
+            create_sub_method_settings(color_mapping_two_colors_setting_frame)
+            create_sub_method_buttons(current_method, frame, color_mapping_two_colors_setting_button_frame)
+            show_current_sub_method_settings_frame()
 
 
 # method_name rb_key
 def create_settings(event, combo, frame):  # когда жмякаем на кобобокс создаётся нкжное окно с флажками
-    global created_methods, decoloration_sub_settings_frame, color_mapping_sub_settings_frame, decoloration_sub_frame
+    global created_methods, decoloration_sub_settings_frame, color_mapping_sub_settings_frame, decoloration_sub_frame,color_mapping_sub_frame
     current_method = get_method_name(event, combo)
-    print(current_method)
     if current_method == "Decoloration":
         if hasattr(frame, 'decoloration_sub_frame'):
             frame.current_sub_method = frame.decoloration_current_sub_method.get()
@@ -390,32 +425,34 @@ def create_settings(event, combo, frame):  # когда жмякаем на ко
                 color_mapping_sub_frame.grid(row=0, column=0, sticky="nsew")
 
                 color_mapping_sub_choosing_button = Button(color_mapping_sub_frame,
-                                                           textvariable=frame.color_mapping_current_sub_method)
+                                                          textvariable=frame.color_mapping_current_sub_method)
                 color_mapping_sub_choosing_button.grid(row=0, column=0, sticky="nsew")
 
                 color_mapping_sub_choosing_frame = Frame(color_mapping_sub_frame, bg="black")
                 color_mapping_sub_choosing_frame.grid(row=1, column=0, sticky="nsew")
                 color_mapping_sub_choosing_frame.grid_rowconfigure(0, weight=1)
                 color_mapping_sub_choosing_frame.grid_columnconfigure(0, weight=1)
-                color_mapping_sub_settings_button = Button(color_mapping_sub_frame)
+                color_mapping_sub_settings_button = Button(color_mapping_sub_frame, text='Settings')
 
                 color_mapping_sub_settings_button.grid(row=2, column=0, sticky="nsew")
 
-                color_mapping_sub_settings_frame = Frame(color_mapping_sub_frame, bg="red", height=1000)
+                color_mapping_sub_settings_frame = Frame(color_mapping_sub_frame, bg="dark red")
 
                 color_mapping_sub_settings_frame.grid(row=3, column=0, sticky="nsew")
+                color_mapping_sub_settings_frame.grid_rowconfigure(0, weight=1)
+                color_mapping_sub_settings_frame.grid_columnconfigure(0, weight=1)
                 color_mapping_sub_settings_frame.grid_remove()
 
                 color_mapping_sub_frame.choosing_frame = [color_mapping_sub_choosing_frame, 1]
                 color_mapping_sub_frame.settings_frame = [color_mapping_sub_settings_frame, 0]
                 color_mapping_sub_choosing_button.bind("<Button-1>",
-                                                       lambda e,
-                                                              lst=color_mapping_sub_frame.choosing_frame: sub_choosing_button_on(
-                                                           lst))
+                                                      lambda e,
+                                                             lst=color_mapping_sub_frame.choosing_frame: sub_choosing_button_on(
+                                                          lst))
                 color_mapping_sub_settings_button.bind("<Button-1>",
-                                                       lambda e,
-                                                              lst=color_mapping_sub_frame.settings_frame: sub_choosing_button_on(
-                                                           lst))
+                                                      lambda e,
+                                                             lst=color_mapping_sub_frame.settings_frame: sub_choosing_button_on(
+                                                          lst))
 
                 for i in range(quantity_sub_methods):
                     color_mapping_sub_frame.grid_rowconfigure(i, weight=1)
@@ -439,7 +476,8 @@ def create_settings(event, combo, frame):  # когда жмякаем на ко
                             activebackground="black",
                             anchor='w',  # слева
                             command=lambda current_method=current_method, frm=frame: get_current_sub_method(
-                                current_method, frm)
+                                current_method,
+                                frm)
                         )
                         current.grid(row=index, column=0, sticky="ew")
                         index += 1
