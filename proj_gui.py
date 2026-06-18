@@ -90,7 +90,7 @@ def RUN():
                                                                                         cnv))  # изменяем размер субнастроечного фрейма
 
     # выбор метода
-    combo = ttk.Combobox(method_frame, values=["Decoloration", "Color Mapping", "shit"], state="readonly")
+    combo = ttk.Combobox(method_frame, values=["Decoloration", "Color Mapping", "Pixelization"], state="readonly")
     combo.grid(row=0, column=0, sticky="nsew")
     combo.bind("<<ComboboxSelected>>", lambda e, com=combo, frm=description_frame: show_current_descriptions_text(e,
                                                                                                                   com,

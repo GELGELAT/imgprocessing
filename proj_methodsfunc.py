@@ -90,6 +90,59 @@ def color_mapping_sub_method_two_colors(label,current_sub_method):
     label.current +=1
 
 
+from PIL import Image
+
+def pixelization_standard_method_sub_method(label, current_sub_method):
+    settings = current_sub_method.object.settings
+    block_x_size = int(settings[0])
+    block_y_size = int(settings[1])
+    image = get_image(label.head, label.current)
+    pil_image = image.pil_image
+
+    if pil_image.mode != 'RGBA':
+        pil_image = pil_image.convert('RGBA')
+
+    width, height = pil_image.size
+    pixels = pil_image.load()
+
+    new_image = Image.new('RGBA', (width, height))
+    new_pixels = new_image.load()
+
+    for x in range(0, height, block_x_size):
+        for y in range(0, width, block_y_size):
+            
+            x_end = min(x + block_x_size, width)#границы квадрата малевича
+            y_end = min(y + block_y_size, height)
+
+            r_sum = g_sum = b_sum = a_sum = 0
+            pixel_count = 0
+
+            for dy in range(y, y_end):
+                for dx in range(x, x_end):
+                    r, g, b, a = pixels[dx, dy]
+                    r_sum += r
+                    g_sum += g
+                    b_sum += b
+                    a_sum += a
+                    pixel_count += 1
+
+            r_avg = r_sum // pixel_count
+            g_avg = g_sum // pixel_count
+            b_avg = b_sum // pixel_count
+            a_avg = a_sum // pixel_count
+
+            for dy in range(y, y_end):
+                for dx in range(x, x_end):
+                    new_pixels[dx, dy] = (r_avg, g_avg, b_avg, a_avg)
+
+    image.next = create_image_list(new_image)
+    label.current += 1
+#pixelization
+def pixelization_method(label,current_sub_method):
+    if current_sub_method.tag == 'pixelization_standard':
+        pixelization_standard_method_sub_method(label,current_sub_method)
+
+
 #получ метод
 def get_method_name(event,combo):
     method = combo.get()
@@ -102,3 +155,5 @@ def use_method(event,current_method,label,current_sub_method):
         decoloration_method(label,current_sub_method)
     elif current_method == "Color Mapping":
         color_mapping_method(label,current_sub_method)
+    elif current_method == "Pixelization":
+        pixelization_method(label, current_sub_method)
