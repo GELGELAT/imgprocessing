@@ -46,6 +46,7 @@ def find_current_sub_method(dictionary, text):
                 if str(sub_values[0]) == index:
                     return sub_values[1]
 
+
 def create_and_store_methods(base_dict, name, index, tag, settings):
     obj = create_custom_method(name, index, tag, settings)
     if tag not in base_dict:
@@ -62,8 +63,3 @@ def find_smallest_index(base_dict, tag):
     while i in indices:
         i += 1
     return i
-
-
-
-
-
