@@ -192,14 +192,23 @@ def open_image_menu(frame, label):
             messagebox.showinfo("Ошибка", "Ошибка.")
     else:
         messagebox.showinfo("Ошибка", "Путь не выбран.")
-def save_image_menu():
-    pass
-def guide_menu():
-    pass
+def save_image_menu(lbl):
+    if not lbl.image:
+        messagebox.showinfo("Error","No image selected")
+        return
+    current_node = get_image(lbl.head,lbl.current)
+    pil_image = current_node.pil_image
+    filepath = filedialog.asksaveasfilename(defaultextension=".png",filetypes=[("PNG files","*.png")],title="Save")
+    if filepath:
+        try:
+            pil_image.save(filepath)
+        except:
+            messagebox.showinfo("Error","No image save")
+
 def about_menu():
-    pass
+    messagebox.showinfo("About","Imgprosseing by Goman Timothy from NSU 2026")
 def exit_menu(root):
-    if messagebox.askyesno("Выход", "Вы уверены, что хотите выйти?"):
+    if messagebox.askyesno("Exit", "Вы уверены, что хотите выйти?"):
         root.destroy()
 def ZZZZ():
     pass

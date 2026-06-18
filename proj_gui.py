@@ -232,14 +232,13 @@ def RUN():
 
     # добавляем menu
     # Файл: Открыть сохранить выход, О программе
-    menu_list = [{"label": "Файл",
+    menu_list = [{"label": "File",
                   "items": [
-                      {"label": "Открыть",
+                      {"label": "Open",
                        "command": lambda frm=image_frame, lab=image_label: open_image_menu(frm, lab)},
-                      {"label": "Сохранить", "command": save_image_menu},
-                      {"label": "Выход", "command": lambda: exit_menu(root)}]},
-                 {"label": "Справка", "items": [{"label": "Как пользоваться", "command": guide_menu},
-                                                {"label": "О программе", "command": about_menu}]}]
+                      {"label": "Save as", "command": lambda lbl = image_label: save_image_menu(lbl)},
+                      {"label": "Exit", "command": lambda: exit_menu(root)}]},
+                 {"label": "Reference", "items": [{"label": "About", "command": about_menu}]}]
     create_menu(menu, menu_list)
     # когда меняем размер окна
     root.bind("<Configure>", lambda e, frm=image_frame, lab=image_label: preview_image_resize_redo(e, frm, lab))

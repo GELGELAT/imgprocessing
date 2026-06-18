@@ -65,10 +65,8 @@ def color_mapping_method(label,current_sub_method):
         color_mapping_sub_method_two_colors(label,current_sub_method)
 def color_mapping_sub_method_two_colors(label,current_sub_method):
     settings = current_sub_method.object.settings
-    print(settings)
     first_color = loads(settings[0])
     second_color = loads(settings[1])
-    print(first_color)
     limit = settings[2]
     image = get_image(label.head, label.current)
     pil_image = image.pil_image
