@@ -81,7 +81,7 @@ create_and_store_methods(base_decoloration, 'Weighted', 0, 'decoloration_weighte
 create_and_store_methods(base_color_mapping, 'Two colors', 0, 'color_mapping_two_colors',
                          [[132, 71, 21], [59, 20, 6], 150])
 
-create_and_store_methods(base_pixelization, 'Pixelization', 0, 'pixelization_standard', [5,5])
+create_and_store_methods(base_pixelization, 'Pixelization', 0, 'pixelization_standard', [5,5,1])
 
 
 def show_current_sub_method_settings_frame():
@@ -246,8 +246,9 @@ def create_sub_method_settings(frame):
             entry.grid(row=2, column=1, padx=10, pady=5)
     if current_sub_method.tag == 'pixelization_standard':
         i = 0
-        for label_text, value in {'x:': current_sub_method.object.settings[0],
-                                  'y:': current_sub_method.object.settings[1]}.items():
+        for label_text, value in {'X:': current_sub_method.object.settings[0],
+                                  'Y:': current_sub_method.object.settings[1],
+                                  'Compress mode (0 or 1):': current_sub_method.object.settings[2]}.items():
             label = Label(frame, text=label_text, bg='black', fg='white')
             label.grid(row=i, column=0, padx=10, pady=5, sticky="w")
 
@@ -275,7 +276,7 @@ def reset_sub_method_settings(current_method):
         create_sub_method_settings_frame(current_method, sub_settings_frame)
     if current_sub_method.tag == 'pixelization_standard':
         sub_method = current_sub_method.object
-        sub_method.settings = ['5', '5']
+        sub_method.settings = ['5', '5','1']
         create_sub_method_settings_frame(current_method, sub_settings_frame)
 
 

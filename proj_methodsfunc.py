@@ -92,10 +92,12 @@ def color_mapping_sub_method_two_colors(label,current_sub_method):
 
 from PIL import Image
 
+
 def pixelization_standard_method_sub_method(label, current_sub_method):
     settings = current_sub_method.object.settings
     block_x_size = int(settings[0])
     block_y_size = int(settings[1])
+    compress = int(settings[2])
     image = get_image(label.head, label.current)
     pil_image = image.pil_image
 
@@ -105,35 +107,75 @@ def pixelization_standard_method_sub_method(label, current_sub_method):
     width, height = pil_image.size
     pixels = pil_image.load()
 
-    new_image = Image.new('RGBA', (width, height))
-    new_pixels = new_image.load()
 
-    for x in range(0, height, block_x_size):
-        for y in range(0, width, block_y_size):
-            
-            x_end = min(x + block_x_size, width)#границы квадрата малевича
-            y_end = min(y + block_y_size, height)
+    if compress == 0:
+        new_image = Image.new('RGBA', (width, height))
+        new_pixels = new_image.load()
+        for y in range(0, height, block_y_size):
+            for x in range(0, width, block_x_size):
 
-            r_sum = g_sum = b_sum = a_sum = 0
-            pixel_count = 0
+                x_end = min(x + block_x_size, width)
+                y_end = min(y + block_y_size, height)
 
-            for dy in range(y, y_end):
-                for dx in range(x, x_end):
-                    r, g, b, a = pixels[dx, dy]
-                    r_sum += r
-                    g_sum += g
-                    b_sum += b
-                    a_sum += a
-                    pixel_count += 1
+                r_sum = g_sum = b_sum = a_sum = 0
+                pixel_count = 0
 
-            r_avg = r_sum // pixel_count
-            g_avg = g_sum // pixel_count
-            b_avg = b_sum // pixel_count
-            a_avg = a_sum // pixel_count
+                for dy in range(y, y_end):
+                    for dx in range(x, x_end):
+                        r, g, b, a = pixels[dx, dy]
+                        r_sum += r
+                        g_sum += g
+                        b_sum += b
+                        a_sum += a
+                        pixel_count += 1
 
-            for dy in range(y, y_end):
-                for dx in range(x, x_end):
-                    new_pixels[dx, dy] = (r_avg, g_avg, b_avg, a_avg)
+                r_avg = r_sum // pixel_count
+                g_avg = g_sum // pixel_count
+                b_avg = b_sum // pixel_count
+                a_avg = a_sum // pixel_count
+
+                for dy in range(y, y_end):
+                    for dx in range(x, x_end):
+                        new_pixels[dx, dy] = (r_avg, g_avg, b_avg, a_avg)
+
+    elif compress == 1:
+        new_width = width // block_x_size
+        new_height = height // block_y_size
+
+        new_image = Image.new('RGBA', (new_width, new_height))
+        new_pixels = new_image.load()
+
+        for y in range(0, height, block_y_size):
+            for x in range(0, width, block_x_size):
+
+                x_end = min(x + block_x_size, width)
+                y_end = min(y + block_y_size, height)
+
+                if x_end - x < block_x_size or y_end - y < block_y_size:
+                    continue
+
+                r_sum = g_sum = b_sum = a_sum = 0
+                pixel_count = 0
+
+                for dy in range(y, y_end):
+                    for dx in range(x, x_end):
+                        r, g, b, a = pixels[dx, dy]
+                        r_sum += r
+                        g_sum += g
+                        b_sum += b
+                        a_sum += a
+                        pixel_count += 1
+
+                r_avg = r_sum // pixel_count
+                g_avg = g_sum // pixel_count
+                b_avg = b_sum // pixel_count
+                a_avg = a_sum // pixel_count
+
+                new_x = x // block_x_size
+                new_y = y // block_y_size
+
+                if new_x < new_width and new_y < new_height:
+                    new_pixels[new_x, new_y] = (r_avg, g_avg, b_avg, a_avg)
 
     image.next = create_image_list(new_image)
     label.current += 1
