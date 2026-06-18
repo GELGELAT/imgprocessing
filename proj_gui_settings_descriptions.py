@@ -1,13 +1,12 @@
 from tkinter import *
-from tkinter import scrolledtext,colorchooser
+from tkinter import scrolledtext, colorchooser
 from proj_methodsfunc import get_method_name
 from proj_custommethods import *
 from json import loads
+
 current_sub_method = create_current_sub_method(None, None)
 
 FRAMES = {}
-
-
 
 base_decoloration = {}
 base_color_mapping = {}
@@ -81,7 +80,7 @@ create_and_store_methods(base_decoloration, 'Weighted', 0, 'decoloration_weighte
 create_and_store_methods(base_color_mapping, 'Two colors', 0, 'color_mapping_two_colors',
                          [[132, 71, 21], [59, 20, 6], 150])
 
-create_and_store_methods(base_pixelization, 'Pixelization', 0, 'pixelization_standard', [5,5,1])
+create_and_store_methods(base_pixelization, 'Pixelization', 0, 'pixelization_standard', [5, 5, 1])
 
 
 def show_current_sub_method_settings_frame():
@@ -122,7 +121,6 @@ def get_var_from_sub_method_settings():
 def sub_method_settings_change():
     result_settings = get_var_from_sub_method_settings()
 
-
     if current_sub_method.tag == 'decoloration_standard':
         i = 0
         for result in result_settings:
@@ -149,15 +147,14 @@ def validate_input(var, *args):
     value = var.get()
     # Оставляем только цифры
 
-
-    if current_sub_method.tag == 'decoloration_standard':
+    if current_sub_method.tag == 'decoloration_standard' or current_sub_method.tag == 'color_mapping_two_colors':
         filtered = ''.join(filter(str.isdigit, value))
         if value != filtered:
             var.set(filtered)
-        '''if var.get() == '':
+        if var.get() == '':
             var.set('1')
         if int(var.get()[0]) == 0:
-            var.set('1')'''
+            var.set('1')
         if 255 < int(var.get()):
             var.set('255')
         elif int(var.get()) < 0:
@@ -166,22 +163,25 @@ def validate_input(var, *args):
         filtered = ''.join(i for i in value if i.isdigit() or i == '.')
         if filtered.count('.') > 1:
             filtered = value.replace('.', '', 1)
-
         if value != filtered:
             var.set(filtered)
+
 
 def rgb_to_hex(lst):
     # Если пришла строка — парсим
     if isinstance(lst, str):
         lst = loads(lst)
     return f"#{lst[0]:02x}{lst[1]:02x}{lst[2]:02x}"
-#[132, 71, 21], [59, 20, 6] variables_settings
-def choose_color(index,lbl,lst):
+
+
+# [132, 71, 21], [59, 20, 6] variables_settings
+def choose_color(index, lbl, lst):
     color = colorchooser.askcolor(title="Выберите цвет")
     if color:
         current_sub_method.object.settings[index] = color[0]
         lst[index] = StringVar(value=str(list(color[0])))
         lbl.config(bg=color[1])
+
 
 def create_sub_method_settings(frame):
     global variables_settings
@@ -214,12 +214,12 @@ def create_sub_method_settings(frame):
             entry.grid(row=i, column=1, padx=10, pady=5)
             i += 1
     elif current_sub_method.tag == 'color_mapping_two_colors':
-        first_color_display = Label(frame, bg=rgb_to_hex(current_sub_method.object.settings[0]), width=5, height=2, relief="sunken")
+        first_color_display = Label(frame, bg=rgb_to_hex(current_sub_method.object.settings[0]), width=5, height=2,
+                                    relief="sunken")
         first_color_display.grid(row=0, column=1, padx=10, pady=5, sticky="e")
-        second_color_display = Label(frame, bg=rgb_to_hex(current_sub_method.object.settings[1]), width=5, height=2, relief="sunken")
+        second_color_display = Label(frame, bg=rgb_to_hex(current_sub_method.object.settings[1]), width=5, height=2,
+                                     relief="sunken")
         second_color_display.grid(row=1, column=1, padx=10, pady=5, sticky="e")
-
-
 
         for label_text, value in {'first_color:': current_sub_method.object.settings[0],
                                   'second_color:': current_sub_method.object.settings[1]}.items():
@@ -228,12 +228,12 @@ def create_sub_method_settings(frame):
             variables_settings.append(var_settings)
 
         first_color = Button(frame, text="Choose first color",
-                             command=lambda lbl=first_color_display,lst=variables_settings: choose_color(0, lbl,lst))
+                             command=lambda lbl=first_color_display, lst=variables_settings: choose_color(0, lbl, lst))
         first_color.grid(row=0, column=0, padx=10, pady=5, sticky="w")
         second_color = Button(frame, text="Choose second color",
-                              command=lambda lbl=second_color_display,lst=variables_settings: choose_color(1, lbl,lst))
+                              command=lambda lbl=second_color_display, lst=variables_settings: choose_color(1, lbl,
+                                                                                                            lst))
         second_color.grid(row=1, column=0, padx=10, pady=5, sticky="w")
-
 
         for label_text, value in {'Limit:': current_sub_method.object.settings[2]}.items():
             label = Label(frame, text=label_text, bg='black', fg='white')
@@ -247,8 +247,8 @@ def create_sub_method_settings(frame):
     if current_sub_method.tag == 'pixelization_standard':
         i = 0
         for label_text, value in {'X:': current_sub_method.object.settings[0],
-                                  'Y:': current_sub_method.object.settings[1],
-                                  'Compress mode (0 or 1):': current_sub_method.object.settings[2]}.items():
+                                  'Y:': current_sub_method.object.settings[1]
+                                  }.items():
             label = Label(frame, text=label_text, bg='black', fg='white')
             label.grid(row=i, column=0, padx=10, pady=5, sticky="w")
 
@@ -258,7 +258,11 @@ def create_sub_method_settings(frame):
             entry = Entry(frame, textvariable=var_settings)
             entry.grid(row=i, column=1, padx=10, pady=5)
             i += 1
+        preserve_alpha_var = IntVar(value=current_sub_method.object.settings[2])
+        variables_settings.append(preserve_alpha_var)
 
+        checkbutton = Checkbutton(frame,text="Compress mode",variable=preserve_alpha_var)
+        checkbutton.grid(row=2, column=0, padx=10, pady=5)
 
 
 def reset_sub_method_settings(current_method):
@@ -276,7 +280,7 @@ def reset_sub_method_settings(current_method):
         create_sub_method_settings_frame(current_method, sub_settings_frame)
     if current_sub_method.tag == 'pixelization_standard':
         sub_method = current_sub_method.object
-        sub_method.settings = ['5', '5','1']
+        sub_method.settings = ['5', '5', '1']
         create_sub_method_settings_frame(current_method, sub_settings_frame)
 
 
@@ -355,7 +359,7 @@ def save_sub_method_settings(current_method, frame):
                 current.grid(row=index, column=0, sticky="ew")
                 index += 1
         color_mapping_sub_frame.choosing_frame[0] = color_mapping_sub_choosing_frame
-    elif current_sub_method.tag == 'pixelization_standard': #pixelization_standard
+    elif current_sub_method.tag == 'pixelization_standard':  # pixelization_standard
         sub_method = current_sub_method.object
 
         result_settings = get_var_from_sub_method_settings()
@@ -392,6 +396,7 @@ def save_sub_method_settings(current_method, frame):
                 current.grid(row=index, column=0, sticky="ew")
                 index += 1
         pixelization_sub_frame.choosing_frame[0] = pixelization_sub_choosing_frame
+
 
 def create_sub_method_settings_frame(current_method, frame):  # decoloration_weighted
     if current_sub_method.tag == 'decoloration_standard':
@@ -512,12 +517,13 @@ def create_sub_method_settings_frame(current_method, frame):  # decoloration_wei
             sub_color_mapping_two_colors_setting_frame.grid_rowconfigure(1, weight=1)
             frame.color_mapping_sub_frame.main_color_mapping_two_colors_setting_frame.sub_color_mapping_two_colors_setting_frame = sub_color_mapping_two_colors_setting_frame
             color_mapping_two_colors_setting_frame = Frame(sub_color_mapping_two_colors_setting_frame, bg="black",
-                                                        height=100)
+                                                           height=100)
             color_mapping_two_colors_setting_frame.grid(row=0, column=0, sticky="nsew")
             color_mapping_two_colors_setting_frame.grid_columnconfigure(0, weight=1)
 
-            color_mapping_two_colors_setting_button_frame = Frame(sub_color_mapping_two_colors_setting_frame, bg="black",
-                                                               height=100)
+            color_mapping_two_colors_setting_button_frame = Frame(sub_color_mapping_two_colors_setting_frame,
+                                                                  bg="black",
+                                                                  height=100)
             color_mapping_two_colors_setting_button_frame.grid(row=1, column=0, sticky="nsew")
             color_mapping_two_colors_setting_button_frame.grid_columnconfigure(0, weight=1)
             color_mapping_two_colors_setting_button_frame.grid_columnconfigure(1, weight=1)
@@ -527,7 +533,7 @@ def create_sub_method_settings_frame(current_method, frame):  # decoloration_wei
             create_sub_method_buttons(current_method, frame, color_mapping_two_colors_setting_button_frame)
             show_current_sub_method_settings_frame()
 
-    elif current_sub_method.tag == 'pixelization_standard':# Pixelization pixelization_standard
+    elif current_sub_method.tag == 'pixelization_standard':  # Pixelization pixelization_standard
         if hasattr(frame.pixelization_sub_frame, 'main_pixelization_standard_setting_frame'):
             frame.pixelization_sub_frame.main_pixelization_standard_setting_frame.sub_pixelization_standard_setting_frame.pixelization_standard_setting_frame.destroy()
             pixelization_standard_setting_frame = Frame(
@@ -572,9 +578,10 @@ def create_sub_method_settings_frame(current_method, frame):  # decoloration_wei
             create_sub_method_buttons(current_method, frame, pixelization_standard_setting_button_frame)
             show_current_sub_method_settings_frame()
 
+
 # method_name rb_key
 def create_settings(event, combo, frame):  # когда жмякаем на кобобокс создаётся нкжное окно с флажками
-    global created_methods, decoloration_sub_settings_frame, color_mapping_sub_settings_frame, decoloration_sub_frame,color_mapping_sub_frame,pixelization_sub_settings_frame, pixelization_sub_frame
+    global created_methods, decoloration_sub_settings_frame, color_mapping_sub_settings_frame, decoloration_sub_frame, color_mapping_sub_frame, pixelization_sub_settings_frame, pixelization_sub_frame
     current_method = get_method_name(event, combo)
     if current_method == "Decoloration":
         if hasattr(frame, 'decoloration_sub_frame'):
@@ -656,7 +663,7 @@ def create_settings(event, combo, frame):  # когда жмякаем на ко
                 color_mapping_sub_frame.grid(row=0, column=0, sticky="nsew")
 
                 color_mapping_sub_choosing_button = Button(color_mapping_sub_frame,
-                                                          textvariable=frame.color_mapping_current_sub_method)
+                                                           textvariable=frame.color_mapping_current_sub_method)
                 color_mapping_sub_choosing_button.grid(row=0, column=0, sticky="nsew")
 
                 color_mapping_sub_choosing_frame = Frame(color_mapping_sub_frame, bg="black")
@@ -677,13 +684,13 @@ def create_settings(event, combo, frame):  # когда жмякаем на ко
                 color_mapping_sub_frame.choosing_frame = [color_mapping_sub_choosing_frame, 1]
                 color_mapping_sub_frame.settings_frame = [color_mapping_sub_settings_frame, 0]
                 color_mapping_sub_choosing_button.bind("<Button-1>",
-                                                      lambda e,
-                                                             lst=color_mapping_sub_frame.choosing_frame: sub_choosing_button_on(
-                                                          lst))
+                                                       lambda e,
+                                                              lst=color_mapping_sub_frame.choosing_frame: sub_choosing_button_on(
+                                                           lst))
                 color_mapping_sub_settings_button.bind("<Button-1>",
-                                                      lambda e,
-                                                             lst=color_mapping_sub_frame.settings_frame: sub_choosing_button_on(
-                                                          lst))
+                                                       lambda e,
+                                                              lst=color_mapping_sub_frame.settings_frame: sub_choosing_button_on(
+                                                           lst))
 
                 for i in range(quantity_sub_methods):
                     color_mapping_sub_frame.grid_rowconfigure(i, weight=1)
