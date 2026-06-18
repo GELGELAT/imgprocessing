@@ -11,7 +11,7 @@ import os
 def RUN():
     root = tk.Tk()
     # настройка root
-    root.title("Тиша нубус")
+    root.title("Imgprossesing")
 
     screen_wight, screen_height = root.winfo_screenwidth(), root.winfo_screenheight()
     k = round(screen_wight / screen_height, 2)
@@ -87,7 +87,7 @@ def RUN():
     settings_canvas.bind_all("<MouseWheel>", lambda e, cnv=settings_canvas: on_mousewheel(e, cnv))
 
     settings_canvas.bind("<Configure>", lambda e, cnv=settings_canvas: on_frame_from_canvas_width_resize(e,
-                                                                                        cnv))  # изменяем размер субнастроечного фрейма
+                                                                                                         cnv))  # изменяем размер субнастроечного фрейма
 
     # выбор метода
     combo = ttk.Combobox(method_frame, values=["Decoloration", "Color Mapping", "Pixelization"], state="readonly")
@@ -99,9 +99,8 @@ def RUN():
                add='+')
     combo.bind("<<ComboboxSelected>>", lambda e, com=combo, frm=sub_settings_frame: create_settings(e, com, frm),
                add='+')  # создание настроек
-    combo.bind("<<ComboboxSelected>>", lambda e, com=combo,cnv=settings_canvas: show_current_settings(e, com,cnv),
+    combo.bind("<<ComboboxSelected>>", lambda e, com=combo, cnv=settings_canvas: show_current_settings(e, com, cnv),
                add='+')  # отображ нужных настроек
-
 
     # 1настройка
 
@@ -117,9 +116,20 @@ def RUN():
     # создаём кастомные кнопки
     settings_button = buttons_canvas.create_polygon(create_top_left_button(buttons_canvas), width=2, outline="white",
                                                     fill="black")
+    text_settings_button = buttons_canvas.create_text(int(buttons_canvas.winfo_width() / 6),
+                                                      int(buttons_canvas.winfo_height() / 5.5), text="settings",
+                                                      fill="white",
+                                                      font=("Arial", int(k * 12)),
+                                                      angle=15)
+
     description_button = buttons_canvas.create_polygon(create_top_right_button(buttons_canvas), width=2,
                                                        outline="white",
                                                        fill="black")
+    text_description_button = buttons_canvas.create_text(int(buttons_canvas.winfo_width() / 1.2),
+                                                         int(buttons_canvas.winfo_height() / 5.5), text="description",
+                                                         fill="white",
+                                                         font=("Arial", int(k * 12)),
+                                                         angle=-15)
     left_button = buttons_canvas.create_polygon(create_bottom_left_button(buttons_canvas), width=2, outline="white",
                                                 fill="black")
     right_button = buttons_canvas.create_polygon(create_bottom_right_button(buttons_canvas), width=2, outline="white",
@@ -150,15 +160,36 @@ def RUN():
     settings_description_button_config = {
         settings_button: {
             "<Button-1>": lambda e, frm=settings_frame: show_settings_descriptions(e, frm),  # показ настроек
-            "<Enter>": lambda e, cnv=buttons_canvas, btn=settings_button: settings_button_on(e, cnv, btn),  # покрас на
-            "<Leave>": lambda e, cnv=buttons_canvas, btn=settings_button: settings_button_leave(e, cnv, btn)
+            "<Enter>": lambda e, cnv=buttons_canvas, btn=settings_button, txt=text_settings_button: settings_button_on(
+                e, cnv, btn, txt),  # покрас на
+            "<Leave>": lambda e, cnv=buttons_canvas, btn=settings_button,
+                              txt=text_settings_button: settings_button_leave(e, cnv, btn, txt)
             # покрас от
         },
+        text_settings_button: {
+            "<Button-1>": lambda e, frm=settings_frame: show_settings_descriptions(e, frm),  # показ настроек
+            "<Enter>": lambda e, cnv=buttons_canvas, btn=settings_button, txt=text_settings_button: settings_button_on(
+                e, cnv, btn, txt),  # покрас на
+            "<Leave>": lambda e, cnv=buttons_canvas, btn=settings_button,
+                              txt=text_settings_button: settings_button_leave(e, cnv, btn, txt)
+            # покрас от
+        }
+        ,
         description_button: {
             "<Button-1>": lambda e, frm=description_frame: show_settings_descriptions(e, frm),  # показ описания
-            "<Enter>": lambda e, cnv=buttons_canvas, btn=description_button: description_button_on(e, cnv, btn),
-            "<Leave>": lambda e, cnv=buttons_canvas, btn=description_button: description_button_leave(e, cnv, btn)
-        }}
+            "<Enter>": lambda e, cnv=buttons_canvas, btn=description_button,
+                              txt=text_description_button: description_button_on(e, cnv, btn, txt),
+            "<Leave>": lambda e, cnv=buttons_canvas, btn=description_button,
+                              txt=text_description_button: description_button_leave(e, cnv, btn, txt)
+        },
+        text_description_button: {
+            "<Button-1>": lambda e, frm=description_frame: show_settings_descriptions(e, frm),  # показ описания
+            "<Enter>": lambda e, cnv=buttons_canvas, btn=description_button,
+                              txt=text_description_button: description_button_on(e, cnv, btn, txt),
+            "<Leave>": lambda e, cnv=buttons_canvas, btn=description_button,
+                              txt=text_description_button: description_button_leave(e, cnv, btn, txt)
+        }
+    }
     for item, events in settings_description_button_config.items():
         for event_name, handler in events.items():
             buttons_canvas.tag_bind(item, event_name, handler)
@@ -201,7 +232,7 @@ def RUN():
                                               buttons_canvas.winfo_height() * 3 // 4, width=2,
                                               outline="white")
     text_start_btn = buttons_canvas.create_text(int(buttons_canvas.winfo_width() / 2),
-                                                int(buttons_canvas.winfo_height() / 2), text="СТАРТ", fill="white",
+                                                int(buttons_canvas.winfo_height() / 2), text="START", fill="white",
                                                 font=("Arial", int(k * 22)))
     # настройка старта
     for item in [start_button, text_start_btn]:
@@ -236,7 +267,7 @@ def RUN():
                   "items": [
                       {"label": "Open",
                        "command": lambda frm=image_frame, lab=image_label: open_image_menu(frm, lab)},
-                      {"label": "Save as", "command": lambda lbl = image_label: save_image_menu(lbl)},
+                      {"label": "Save as", "command": lambda lbl=image_label: save_image_menu(lbl)},
                       {"label": "Exit", "command": lambda: exit_menu(root)}]},
                  {"label": "Reference", "items": [{"label": "About", "command": about_menu}]}]
     create_menu(menu, menu_list)

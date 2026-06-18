@@ -11,8 +11,9 @@ from math import sin, cos, radians
 is_started = False
 current_index = -1
 
-#перекрас png картынки в один цвет
-def change_color_png_image(pil_image,RGB):
+
+# перекрас png картынки в один цвет
+def change_color_png_image(pil_image, RGB):
     width, height = pil_image.size
     if pil_image.mode != 'RGBA':
         pil_image = pil_image.convert('RGBA')
@@ -20,8 +21,9 @@ def change_color_png_image(pil_image,RGB):
     for x in range(width):
         for y in range(height):
             if pixels_array[x, y][3] > 0:
-                pixels_array[x,y] = (RGB[0],RGB[1],RGB[2],pixels_array[x,y][3])
+                pixels_array[x, y] = (RGB[0], RGB[1], RGB[2], pixels_array[x, y][3])
     return pil_image
+
 
 # ф подгона под размер окна при растягивании
 def preview_image_resize_redo(event, frame, label):
@@ -33,6 +35,8 @@ def preview_image_resize_redo(event, frame, label):
         tk_image_resize = ImageTk.PhotoImage(pil_image_resize)  # ресайзнутый тк файл
         label.config(image=tk_image_resize)
         label.image = tk_image_resize
+
+
 # ф обработок кнопак
 # ф начала обработки
 def processing(event, combo, label, image_frame, image_label):
@@ -42,56 +46,86 @@ def processing(event, combo, label, image_frame, image_label):
         global is_started
         is_started = True
         sub_method_settings_change()
-        use_method(event, current_method, label,current_sub_method)
+        use_method(event, current_method, label, current_sub_method)
         preview_image_resize_redo(event, image_frame, image_label)
         is_started = False
+
+
 def start_button_on(event, canvas, button, text):  # навелись
     if not is_started:
         canvas.itemconfig(button, fill="white")
         canvas.itemconfig(text, fill="black")
+
+
 def start_button_leave(event, canvas, button, text):  # увелись
     if not is_started:
         canvas.itemconfig(button, fill="black")
         canvas.itemconfig(text, fill="white")
-def settings_button_on(event, canvas, button):  # увелись
+
+
+def settings_button_on(event, canvas, button, txt):  # увелись
     if not is_started:
         canvas.itemconfig(button, fill="white")
-def settings_button_leave(event, canvas, button):  # увелись
+        canvas.itemconfig(txt, fill="black")
+
+
+def settings_button_leave(event, canvas, button, txt):  # увелись
     if not is_started:
         canvas.itemconfig(button, fill="black")
-def description_button_on(event, canvas, button):  # увелись
+        canvas.itemconfig(txt, fill="white")
+
+
+def description_button_on(event, canvas, button, txt):  # увелись
     if not is_started:
         canvas.itemconfig(button, fill="white")
-def description_button_leave(event, canvas, button):  # увелись
+        canvas.itemconfig(txt, fill="black")
+
+
+def description_button_leave(event, canvas, button, txt):  # увелись
     if not is_started:
         canvas.itemconfig(button, fill="black")
-def left_button_on(event, canvas, button,image):  # увелись
+        canvas.itemconfig(txt, fill="white")
+
+
+def left_button_on(event, canvas, button, image):  # увелись
     if not is_started:
         canvas.itemconfig(button, fill="white")
         canvas.itemconfig(image, image=canvas.left_arrow_black)
-def left_button_leave(event, canvas, button,image):  # увелись
+
+
+def left_button_leave(event, canvas, button, image):  # увелись
     if not is_started:
         canvas.itemconfig(button, fill="black")
         canvas.itemconfig(image, image=canvas.left_arrow_white)
-def right_button_on(event, canvas, button,image):  # увелись
+
+
+def right_button_on(event, canvas, button, image):  # увелись
     if not is_started:
         canvas.itemconfig(button, fill="white")
         canvas.itemconfig(image, image=canvas.right_arrow_black)
-def right_button_leave(event, canvas, button,image):  # увелись
+
+
+def right_button_leave(event, canvas, button, image):  # увелись
     if not is_started:
         canvas.itemconfig(button, fill="black")
         canvas.itemconfig(image, image=canvas.right_arrow_white)
+
+
 # ф перемотки use_method
 def left_image(event, frame, label):
     if label.image:
         if label.current > 0:
             label.current -= 1
             preview_image_resize_redo(event, frame, label)
+
+
 def right_image(event, frame, label):
     if label.image:
         if label.current < length_image(label.head) - 1:
             label.current += 1
             preview_image_resize_redo(event, frame, label)
+
+
 # ф создания menu
 def create_menu(menu, list):
     for i in list:
@@ -101,6 +135,8 @@ def create_menu(menu, list):
             create_menu(submenu, i["items"])
         else:
             menu.add_command(label=i["label"], command=i["command"])
+
+
 # ф создания кнопок
 def create_top_left_button(canvas):
     width = canvas.winfo_width()
@@ -119,6 +155,8 @@ def create_top_left_button(canvas):
         points.append(y_0 + minor_axis * sin(radians(i)))
 
     return points
+
+
 def create_top_right_button(canvas):
     width = canvas.winfo_width()
     height = canvas.winfo_height()
@@ -137,11 +175,14 @@ def create_top_right_button(canvas):
         points.append(y_0 + minor_axis * sin(radians(i)))
 
     return points
+
+
 def create_bottom_left_button(canvas):
     width = canvas.winfo_width()
     height = canvas.winfo_height()
 
-    points = [width // 2 - 3, height*3 // 4 + 5, width // 2 - 3, height -5, 5, height-5, 5, height // 2+6, 15, height // 2+6]
+    points = [width // 2 - 3, height * 3 // 4 + 5, width // 2 - 3, height - 5, 5, height - 5, 5, height // 2 + 6, 15,
+              height // 2 + 6]
     """x = x₀ + a·cos(t)
        y = y₀ + b·sin(t)"""
     x_0 = width // 2 - 5
@@ -150,15 +191,18 @@ def create_bottom_left_button(canvas):
     minor_axis = -(height // 4)
 
     for i in range(90):
-        i +=180
+        i += 180
         points.append(x_0 + major_axis * cos(radians(i)))
         points.append(y_0 + minor_axis * sin(radians(i)))
     return points
+
+
 def create_bottom_right_button(canvas):
     width = canvas.winfo_width()
     height = canvas.winfo_height()
 
-    points = [width-15, height // 2 + 6, width-5, height // 2 + 6, width-5, height - 5, width // 2 + 3, height - 5, width // 2 + 3, height * 3 // 4 + 5]
+    points = [width - 15, height // 2 + 6, width - 5, height // 2 + 6, width - 5, height - 5, width // 2 + 3,
+              height - 5, width // 2 + 3, height * 3 // 4 + 5]
     """x = x₀ + a·cos(t)
        y = y₀ + b·sin(t)"""
     x_0 = width // 2 + 5
@@ -171,9 +215,11 @@ def create_bottom_right_button(canvas):
         points.append(x_0 + major_axis * cos(radians(i)))
         points.append(y_0 + minor_axis * sin(radians(i)))
     return points
+
+
 # откр новый файл
 def open_image_menu(frame, label):
-    image_path = filedialog.askopenfilename(title="Выберите изображение",
+    image_path = filedialog.askopenfilename(title="Select an image",
                                             filetypes=[("Изображения", "*.jpg *.jpeg *.png")])
     if image_path:
         try:
@@ -189,26 +235,35 @@ def open_image_menu(frame, label):
                 label.current = 0
 
         except:
-            messagebox.showinfo("Ошибка", "Ошибка.")
+            messagebox.showinfo("Error", "Incorrect image.")
     else:
-        messagebox.showinfo("Ошибка", "Путь не выбран.")
+        messagebox.showinfo("Error", "The path is not chosen.")
+
+
 def save_image_menu(lbl):
     if not lbl.image:
-        messagebox.showinfo("Error","No image selected")
+        messagebox.showinfo("Error", "No image selected")
         return
-    current_node = get_image(lbl.head,lbl.current)
+    current_node = get_image(lbl.head, lbl.current)
     pil_image = current_node.pil_image
-    filepath = filedialog.asksaveasfilename(defaultextension=".png",filetypes=[("PNG files","*.png")],title="Save")
+    filepath = filedialog.asksaveasfilename(defaultextension=".png", filetypes=[("PNG files", "*.png")], title="Save")
     if filepath:
         try:
             pil_image.save(filepath)
         except:
-            messagebox.showinfo("Error","No image save")
+            messagebox.showinfo("Error", "No image save.")
+    else:
+        messagebox.showinfo("Ошибка", "The path is not chosen.")
+
 
 def about_menu():
-    messagebox.showinfo("About","Imgprosseing by Goman Timothy from NSU 2026")
+    messagebox.showinfo("About", "Imgprosseing by Goman Timothy from NSU 2026")
+
+
 def exit_menu(root):
-    if messagebox.askyesno("Exit", "Вы уверены, что хотите выйти?"):
+    if messagebox.askyesno("Exit", "Are you sure you want to exit?"):
         root.destroy()
+
+
 def ZZZZ():
     pass

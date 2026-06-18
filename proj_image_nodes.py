@@ -32,11 +32,13 @@ def image_list_append(head, pil_data):
         return head
     return image_list_prepend(head, pil_data)
 
+
 def get_last_image(head):
     current = head
     while current:
         current = current.next
     return current
+
 
 def get_image(head, index):
     index_current = 0
@@ -48,6 +50,7 @@ def get_image(head, index):
         current = current.next
     return head
 
+
 def length_image(head):
     length = 0
     current = head
@@ -55,7 +58,3 @@ def length_image(head):
         length += 1
         current = current.next
     return length
-
-
-
-
