@@ -1,9 +1,8 @@
 from tkinter import *
-from tkinter import scrolledtext
+from tkinter import scrolledtext,colorchooser
 from proj_methodsfunc import get_method_name
 from proj_custommethods import *
-from proj_configs import *
-
+from json import loads
 current_sub_method = create_current_sub_method(None, None)
 
 FRAMES = {}
@@ -76,10 +75,10 @@ def sub_choosing_button_on(frame_list):
 
 create_and_store_methods(base_decoloration, 'Standard', 0, 'decoloration_standard', [255, 0])
 create_and_store_methods(base_decoloration, 'Standard1', 1, 'decoloration_standard', [128, 128])
-create_and_store_methods(base_decoloration, 'Weighted', 0, 'decoloration_weighted', [0.99, 0.587, 0.114])
+create_and_store_methods(base_decoloration, 'Weighted', 0, 'decoloration_weighted', [0.299, 0.587, 0.114])
 
 create_and_store_methods(base_color_mapping, 'Two colors', 0, 'color_mapping_two_colors',
-                         [(132, 71, 21), (59, 20, 6), 150])
+                         [[132, 71, 21], [59, 20, 6], 150])
 
 
 def show_current_sub_method_settings_frame():
@@ -110,38 +109,71 @@ def create_sub_method_buttons(current_method, parent_frame, frame):
 
 def get_var_from_sub_method_settings():
     result_settings = []
+
     for variables in variables_settings:
         result_settings.append(variables.get())
+
     return result_settings
 
 
 def sub_method_settings_change():
     result_settings = get_var_from_sub_method_settings()
+
+
     if current_sub_method.tag == 'decoloration_standard':
         i = 0
         for result in result_settings:
             current_sub_method.object.settings[i] = int(result)
-            print(result)
+            i += 1
+    elif current_sub_method.tag == 'decoloration_weighted':
+        i = 0
+        for result in result_settings:
+            current_sub_method.object.settings[i] = float(result)
+            i += 1
+    elif current_sub_method.tag == 'color_mapping_two_colors':
+        i = 0
+        for result in result_settings:
+            current_sub_method.object.settings[i] = result
             i += 1
 
 
 def validate_input(var, *args):
     value = var.get()
     # Оставляем только цифры
-    filtered = ''.join(filter(str.isdigit, value))
-    if value != filtered:
-        var.set(filtered)
-    '''if var.get() == '':
-        var.set('1')
-    if int(var.get()[0]) == 0:
-        var.set('1')'''
+
 
     if current_sub_method.tag == 'decoloration_standard':
+        filtered = ''.join(filter(str.isdigit, value))
+        if value != filtered:
+            var.set(filtered)
+        '''if var.get() == '':
+            var.set('1')
+        if int(var.get()[0]) == 0:
+            var.set('1')'''
         if 255 < int(var.get()):
             var.set('255')
         elif int(var.get()) < 0:
             var.set('0')
+    elif current_sub_method.tag == 'decoloration_weighted':
+        filtered = ''.join(i for i in value if i.isdigit() or i == '.')
+        if filtered.count('.') > 1:
+            filtered = value.replace('.', '', 1)
 
+        if value != filtered:
+            var.set(filtered)
+
+def rgb_to_hex(lst):
+    # Если пришла строка — парсим
+    if isinstance(lst, str):
+        lst = loads(lst)
+    return f"#{lst[0]:02x}{lst[1]:02x}{lst[2]:02x}"
+#[132, 71, 21], [59, 20, 6] variables_settings
+def choose_color(index,lbl,lst):
+    color = colorchooser.askcolor(title="Выберите цвет")
+    if color:
+        current_sub_method.object.settings[index] = list(color[0])
+        lst[index] = StringVar(value=str(list(color[0])))
+        lbl.config(bg=color[1])
 
 def create_sub_method_settings(frame):
     global variables_settings
@@ -159,52 +191,142 @@ def create_sub_method_settings(frame):
             entry = Entry(frame, textvariable=var_settings)
             entry.grid(row=i, column=1, padx=10, pady=5)
             i += 1
+    elif current_sub_method.tag == 'decoloration_weighted':
+        i = 0
+        for label_text, value in {'color channel R :': current_sub_method.object.settings[0],
+                                  'color channel G:': current_sub_method.object.settings[1],
+                                  'color channel B:': current_sub_method.object.settings[2]}.items():
+            label = Label(frame, text=label_text, bg='black', fg='white')
+            label.grid(row=i, column=0, padx=10, pady=5, sticky="w")
+
+            var_settings = StringVar(value=value)
+            var_settings.trace('w', lambda *args, v=var_settings: validate_input(v))
+            variables_settings.append(var_settings)
+            entry = Entry(frame, textvariable=var_settings)
+            entry.grid(row=i, column=1, padx=10, pady=5)
+            i += 1
+    elif current_sub_method.tag == 'color_mapping_two_colors':
+        first_color_display = Label(frame, bg=rgb_to_hex(current_sub_method.object.settings[0]), width=5, height=2, relief="sunken")
+        first_color_display.grid(row=0, column=1, padx=10, pady=5, sticky="e")
+        second_color_display = Label(frame, bg=rgb_to_hex(current_sub_method.object.settings[1]), width=5, height=2, relief="sunken")
+        second_color_display.grid(row=1, column=1, padx=10, pady=5, sticky="e")
+
+
+
+        for label_text, value in {'first_color:': current_sub_method.object.settings[0],
+                                  'second_color:': current_sub_method.object.settings[1]}.items():
+            var_settings = StringVar(value=f'{value}')
+            entry = Entry(frame, textvariable=var_settings)
+            variables_settings.append(var_settings)
+
+        first_color = Button(frame, text="Choose first color",
+                             command=lambda lbl=first_color_display,lst=variables_settings: choose_color(0, lbl,lst))
+        first_color.grid(row=0, column=0, padx=10, pady=5, sticky="w")
+        second_color = Button(frame, text="Choose second color",
+                              command=lambda lbl=second_color_display,lst=variables_settings: choose_color(1, lbl,lst))
+        second_color.grid(row=1, column=0, padx=10, pady=5, sticky="w")
+
+
+        for label_text, value in {'Limit:': current_sub_method.object.settings[2]}.items():
+            label = Label(frame, text=label_text, bg='black', fg='white')
+            label.grid(row=2, column=0, padx=10, pady=5, sticky="w")
+
+            var_settings = StringVar(value=str(value))
+            var_settings.trace('w', lambda *args, v=var_settings: validate_input(v))
+            variables_settings.append(var_settings)
+            entry = Entry(frame, textvariable=var_settings)
+            entry.grid(row=2, column=1, padx=10, pady=5)
+
+
 
 
 def reset_sub_method_settings(current_method):
-    sub_method = current_sub_method.object
-    sub_method.settings = ['255', '0']
-    create_sub_method_settings_frame(current_method, sub_settings_frame)
+    if current_sub_method.tag == 'decoloration_standard':
+        sub_method = current_sub_method.object
+        sub_method.settings = ['255', '0']
+        create_sub_method_settings_frame(current_method, sub_settings_frame)
+    elif current_sub_method.tag == 'decoloration_weighted':
+        sub_method = current_sub_method.object
+        sub_method.settings = ['0.299', '0.587', '0.114']
+        create_sub_method_settings_frame(current_method, sub_settings_frame)
 
 
 # decoloration_sub_frame.choosing_frame
 def save_sub_method_settings(current_method, frame):
-    sub_method = current_sub_method.object
+    if current_sub_method.tag == 'decoloration_standard' or current_sub_method.tag == 'decoloration_weighted':
+        sub_method = current_sub_method.object
 
-    result_settings = get_var_from_sub_method_settings()
+        result_settings = get_var_from_sub_method_settings()
 
-    create_and_store_methods(base_decoloration, f'{sub_method.name}',
-                             find_smallest_index(base_decoloration, f'{sub_method.tag}'), f'{sub_method.tag}',
-                             result_settings)
-    choosing_frame = decoloration_sub_frame.choosing_frame[0]
-    choosing_frame.destroy()
-    decoloration_sub_choosing_frame = Frame(decoloration_sub_frame, bg="black")
-    decoloration_sub_choosing_frame.grid(row=1, column=0, sticky="nsew")
-    decoloration_sub_choosing_frame.grid_rowconfigure(0, weight=1)
-    decoloration_sub_choosing_frame.grid_columnconfigure(0, weight=1)
+        create_and_store_methods(base_decoloration, f'{sub_method.name}',
+                                 find_smallest_index(base_decoloration, f'{sub_method.tag}'), f'{sub_method.tag}',
+                                 result_settings)
+        choosing_frame = decoloration_sub_frame.choosing_frame[0]
+        choosing_frame.destroy()
+        decoloration_sub_choosing_frame = Frame(decoloration_sub_frame, bg="black")
+        decoloration_sub_choosing_frame.grid(row=1, column=0, sticky="nsew")
+        decoloration_sub_choosing_frame.grid_rowconfigure(0, weight=1)
+        decoloration_sub_choosing_frame.grid_columnconfigure(0, weight=1)
 
-    index = 0
-    for values in base_decoloration.values():
-        for current_custom in values.values():
-            decoloration_sub_choosing_frame.grid_rowconfigure(index, weight=1)
+        index = 0
+        for values in base_decoloration.values():
+            for current_custom in values.values():
+                decoloration_sub_choosing_frame.grid_rowconfigure(index, weight=1)
 
-            current = Radiobutton(
-                decoloration_sub_choosing_frame,
-                text=current_custom.name,
-                variable=frame.decoloration_current_sub_method,
-                value=get_united_sub_method_name(current_custom.index, current_custom.tag),
-                bg="black",
-                fg="white",
-                selectcolor="gray",
-                activebackground="black",
-                anchor='w',  # слева
-                command=lambda current_method=current_method, frm=frame: get_current_sub_method(current_method,
-                                                                                                frm)
-            )
-            current.grid(row=index, column=0, sticky="ew")
-            index += 1
-    decoloration_sub_frame.choosing_frame[0] = decoloration_sub_choosing_frame
+                current = Radiobutton(
+                    decoloration_sub_choosing_frame,
+                    text=current_custom.name,
+                    variable=frame.decoloration_current_sub_method,
+                    value=get_united_sub_method_name(current_custom.index, current_custom.tag),
+                    bg="black",
+                    fg="white",
+                    selectcolor="gray",
+                    activebackground="black",
+                    anchor='w',  # слева
+                    command=lambda current_method=current_method, frm=frame: get_current_sub_method(current_method,
+                                                                                                    frm)
+                )
+                current.grid(row=index, column=0, sticky="ew")
+                index += 1
+        decoloration_sub_frame.choosing_frame[0] = decoloration_sub_choosing_frame
+    elif current_sub_method.tag == 'color_mapping_two_colors':
+        sub_method = current_sub_method.object
 
+        result_settings = get_var_from_sub_method_settings()
+
+        create_and_store_methods(base_color_mapping, f'{sub_method.name}',
+                                 find_smallest_index(base_color_mapping, f'{sub_method.tag}'), f'{sub_method.tag}',
+                                 result_settings)
+        print(result_settings)
+
+        choosing_frame = color_mapping_sub_frame.choosing_frame[0]
+        choosing_frame.destroy()
+        color_mapping_sub_choosing_frame = Frame(color_mapping_sub_frame, bg="black")
+        color_mapping_sub_choosing_frame.grid(row=1, column=0, sticky="nsew")
+        color_mapping_sub_choosing_frame.grid_rowconfigure(0, weight=1)
+        color_mapping_sub_choosing_frame.grid_columnconfigure(0, weight=1)
+
+        index = 0
+        for values in base_color_mapping.values():
+            for current_custom in values.values():
+                color_mapping_sub_choosing_frame.grid_rowconfigure(index, weight=1)
+
+                current = Radiobutton(
+                    color_mapping_sub_choosing_frame,
+                    text=current_custom.name,
+                    variable=frame.color_mapping_current_sub_method,
+                    value=get_united_sub_method_name(current_custom.index, current_custom.tag),
+                    bg="black",
+                    fg="white",
+                    selectcolor="gray",
+                    activebackground="black",
+                    anchor='w',  # слева
+                    command=lambda current_method=current_method, frm=frame: get_current_sub_method(current_method,
+                                                                                                    frm)
+                )
+                current.grid(row=index, column=0, sticky="ew")
+                index += 1
+        color_mapping_sub_frame.choosing_frame[0] = color_mapping_sub_choosing_frame
 
 def create_sub_method_settings_frame(current_method, frame):  # decoloration_weighted
     if current_sub_method.tag == 'decoloration_standard':

@@ -85,6 +85,8 @@ def color_mapping_sub_method_two_colors(label,current_sub_method):
 #(132,71,21)(59,20,6)
     image.next = create_image_list(new_image)
     label.current +=1
+
+
 #получ метод
 def get_method_name(event,combo):
     method = combo.get()
