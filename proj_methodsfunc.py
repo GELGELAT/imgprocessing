@@ -2,6 +2,7 @@ import tkinter
 from tkinter import *
 from tkinter import messagebox, filedialog
 from PIL import ImageTk, Image
+from json import loads
 
 from proj_image_nodes import *
 
@@ -64,8 +65,10 @@ def color_mapping_method(label,current_sub_method):
         color_mapping_sub_method_two_colors(label,current_sub_method)
 def color_mapping_sub_method_two_colors(label,current_sub_method):
     settings = current_sub_method.object.settings
-    first_color = settings[0]
-    second_color = settings[1]
+    print(settings)
+    first_color = loads(settings[0])
+    second_color = loads(settings[1])
+    print(first_color)
     limit = settings[2]
     image = get_image(label.head, label.current)
     pil_image = image.pil_image
@@ -78,7 +81,7 @@ def color_mapping_sub_method_two_colors(label,current_sub_method):
     for x in range(width):
         for y in range(height):
             R, G, B, A = pixels_array[x, y]
-            if (R + G + B) // 3 >=limit:
+            if (R + G + B) // 3 >=int(limit):
                 new_pixels_array[x, y] = (first_color[0],first_color[1],first_color[2],A)
             else:
                 new_pixels_array[x, y] = (second_color[0],second_color[1],second_color[2],A)

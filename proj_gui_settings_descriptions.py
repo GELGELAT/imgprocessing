@@ -171,7 +171,7 @@ def rgb_to_hex(lst):
 def choose_color(index,lbl,lst):
     color = colorchooser.askcolor(title="Выберите цвет")
     if color:
-        current_sub_method.object.settings[index] = list(color[0])
+        current_sub_method.object.settings[index] = color[0]
         lst[index] = StringVar(value=str(list(color[0])))
         lbl.config(bg=color[1])
 
@@ -248,6 +248,10 @@ def reset_sub_method_settings(current_method):
     elif current_sub_method.tag == 'decoloration_weighted':
         sub_method = current_sub_method.object
         sub_method.settings = ['0.299', '0.587', '0.114']
+        create_sub_method_settings_frame(current_method, sub_settings_frame)
+    elif current_sub_method.tag == 'color_mapping_two_colors':
+        sub_method = current_sub_method.object
+        sub_method.settings = [[132, 71, 21], [59, 20, 6], 150]
         create_sub_method_settings_frame(current_method, sub_settings_frame)
 
 
